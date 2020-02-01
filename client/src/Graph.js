@@ -1,4 +1,4 @@
-var Queue = require('./Queue');
+import Queue from './Queue';
 
 class Graph {
     constructor(noOfVertices, adjList = new Map()) {
@@ -106,4 +106,4 @@ class Graph {
     }
 };
 
-module.exports = Graph;
+export default Graph;
