@@ -1,9 +1,9 @@
 var Queue = require('./Queue');
 
 class Graph {
-    constructor(noOfVertices) {
+    constructor(noOfVertices, adjList = new Map()) {
         this.noOfVertices = noOfVertices;
-        this.AdjList = new Map();
+        this.AdjList = adjList;
     }
 
     addVertex(v) {
@@ -22,8 +22,46 @@ class Graph {
            console.log("Profile " + i + " has " + this.AdjList.get(i).length + " friends");
         }
     }
-    spBtwn2Vs(src, dest) {
+    getGraphInAdjustListAsObj() {
+        var obj = {};
+        this.AdjList.forEach(function(value, key) {
+            obj[key] = value;
+        });
+        return obj;
+    }
+    getGraphAdjustList(graphInAdjList) {
+        var obj = {};
+        graphInAdjList.forEach(function(value, key) {
+            obj[key] = value;
+        });
+        return obj;
+    }
+    spBtwn2Vs(srcId, destId, startingId) {
+        console.log("Shortest Path between " + srcId + " and " + destId + ":");
+        var visited = Array(this.noOfVertices).fill(false);
+        var q = new Queue(), count = 0;
+        var src = srcId - startingId;
+        var dest = destId - startingId;
+        visited[src] = true;
+        q.enqueue(srcId);
 
+        while (q.size() > 0) {
+            srcId = q.dequeue();
+            console.log(count + "->" +srcId + " ");
+            count++;
+
+            if (srcId === destId) break;
+            
+            var adjVsFromCurrentV = this.AdjList.get(srcId);
+            for (var i of adjVsFromCurrentV) {
+                var vId = i;
+                var v = vId - startingId;
+                if (!visited[v]) {
+                    visited[v] = true;
+                    q.enqueue(vId);
+                }
+            }
+        } 
     }
     bfs(srcId, startingId) {
         var visited = Array(this.noOfVertices).fill(false);

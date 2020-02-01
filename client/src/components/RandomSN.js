@@ -293,14 +293,13 @@ class RandomSN extends Component {
                     });
 
                 label.style('opacity', function (o) {
-                    var thisOpacity = isConnected(d, o) ? 1 : opacity;
+                        var thisOpacity = isConnected(d, o) ? 1 : opacity;
 
-                    if (that.state.profileNamesDisplayed && thisOpacity === 1) thisOpacity = 1;
-                    else thisOpacity = 0;
-
-                    this.setAttribute('opacity', thisOpacity);
-                    return thisOpacity;
-                });
+                        if (that.state.profileNamesDisplayed && thisOpacity === 1) thisOpacity = 1;
+                        else thisOpacity = 0;
+                        return thisOpacity;
+                    })
+                    .attr("y", -25);
             };
         }
 
@@ -507,6 +506,10 @@ class RandomSN extends Component {
         console.log(links);
         console.log(graphInAdjList);
         this.drawGraph(nodes, links);
+
+        var graph = new Graph(nodes.length, graphInAdjList);
+        console.log(graph);
+        // graph.spBtwn2Vs(101, 150, 101);
     }
     displayProfilePics = e => {
         console.log(this.state.profilePicsDisplayed);
