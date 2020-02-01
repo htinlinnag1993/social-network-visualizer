@@ -1,0 +1,27 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "engines": {
+    "node": "10.16.3",
+    "npm": "6.11.3"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "server": "nodemon server.js",
+    "client": "npm run start --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "author": "Htin Linn Aung",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.19.1",
+    "concurrently": "^5.0.2",
+    "express": "^4.17.1",
+    "faker": "^4.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
+}

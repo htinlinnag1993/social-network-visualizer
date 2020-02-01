@@ -1,0 +1,1 @@
+export const FETCH_RANDOM_SN = 'fetch_random_SN'; 
