@@ -1,0 +1,159 @@
+
+{
+  "header": {
+    "reportVersion": 1,
+    "event": "Allocation failed - JavaScript heap out of memory",
+    "trigger": "FatalError",
+    "filename": "report.20200202.030428.19512.0.001.json",
+    "dumpEventTime": "2020-02-02T03:04:28Z",
+    "dumpEventTimeStamp": "1580630668140",
+    "processId": 19512,
+    "cwd": "E:\\School_Career_Work\\PersonalProjects\\Social-Network-Visualizer\\server",
+    "commandLine": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "server.js"
+    ],
+    "nodejsVersion": "v12.14.1",
+    "wordSize": 64,
+    "arch": "x64",
+    "platform": "win32",
+    "componentVersions": {
+      "node": "12.14.1",
+      "v8": "7.7.299.13-node.16",
+      "uv": "1.33.1",
+      "zlib": "1.2.11",
+      "brotli": "1.0.7",
+      "ares": "1.15.0",
+      "modules": "72",
+      "nghttp2": "1.40.0",
+      "napi": "5",
+      "llhttp": "2.0.1",
+      "http_parser": "2.8.0",
+      "openssl": "1.1.1d",
+      "cldr": "35.1",
+      "icu": "64.2",
+      "tz": "2019c",
+      "unicode": "12.1"
+    },
+    "release": {
+      "name": "node",
+      "lts": "Erbium",
+      "headersUrl": "https://nodejs.org/download/release/v12.14.1/node-v12.14.1-headers.tar.gz",
+      "sourceUrl": "https://nodejs.org/download/release/v12.14.1/node-v12.14.1.tar.gz",
+      "libUrl": "https://nodejs.org/download/release/v12.14.1/win-x64/node.lib"
+    },
+    "osName": "Windows_NT",
+    "osRelease": "10.0.18362",
+    "osVersion": "Windows 10 Home",
+    "osMachine": "x86_64",
+    "cpus": [
+      {
+        "model": "Intel(R) Core(TM) i7-8086K CPU @ 4.00GHz",
+        "speed": 4008,
+        "user": 4294390,
+        "nice": 0,
+        "sys": 2978812,
+        "idle": 42575671,
+        "irq": 785781
+      },
+      {
+        "model": "Intel(R) Core(TM) i7-8086K CPU @ 4.00GHz",
+        "speed": 4008,
+        "user": 3288421,
+        "nice": 0,
+        "sys": 758984,
+        "idle": 45801468,
+        "irq": 28453
+      },
+      {
+        "model": "Intel(R) Core(TM) i7-8086K CPU @ 4.00GHz",
+        "speed": 4008,
+        "user": 7386796,
+        "nice": 0,
+        "sys": 1744640,
+        "idle": 40717250,
+        "irq": 31187
+      },
+      {
+        "model": "Intel(R) Core(TM) i7-8086K CPU @ 4.00GHz",
+        "speed": 4008,
+        "user": 3442718,
+        "nice": 0,
+        "sys": 988218,
+        "idle": 45417750,
+        "irq": 11859
+      },
+      {
+        "model": "Intel(R) Core(TM) i7-8086K CPU @ 4.00GHz",
+        "speed": 4008,
+        "user": 4683687,
+        "nice": 0,
+        "sys": 1496671,
+        "idle": 43668328,
+        "irq": 21250
+      },
+      {
+        "model": "Intel(R) Core(TM) i7-8086K CPU @ 4.00GHz",
+        "speed": 4008,
+        "user": 5752406,
+        "nice": 0,
+        "sys": 1000843,
+        "idle": 43095437,
+        "irq": 24890
+      },
+      {
+        "model": "Intel(R) Core(TM) i7-8086K CPU @ 4.00GHz",
+        "speed": 4008,
+        "user": 4868781,
+        "nice": 0,
+        "sys": 1551140,
+        "idle": 43428765,
+        "irq": 29421
+      },
+      {
+        "model": "Intel(R) Core(TM) i7-8086K CPU @ 4.00GHz",
+        "speed": 4008,
+        "user": 3438625,
+        "nice": 0,
+        "sys": 1058328,
+        "idle": 45351734,
+        "irq": 18187
+      },
+      {
+        "model": "Intel(R) Core(TM) i7-8086K CPU @ 4.00GHz",
+        "speed": 4008,
+        "user": 3962375,
+        "nice": 0,
+        "sys": 1277171,
+        "idle": 44609140,
+        "irq": 31437
+      },
+      {
+        "model": "Intel(R) Core(TM) i7-8086K CPU @ 4.00GHz",
+        "speed": 4008,
+        "user": 3527281,
+        "nice": 0,
+        "sys": 1003796,
+        "idle": 45317609,
+        "irq": 39390
+      },
+      {
+        "model": "Intel(R) Core(TM) i7-8086K CPU @ 4.00GHz",
+        "speed": 4008,
+        "user": 7600734,
+        "nice": 0,
+        "sys": 1359359,
+        "idle": 40888578,
+        "irq": 33953
+      },
+      {
+        "model": "Intel(R) Core(TM) i7-8086K CPU @ 4.00GHz",
+        "speed": 4008,
+        "user": 2699906,
+        "nice": 0,
+        "sys": 1735390,
+        "idle": 45413375,
+        "irq": 11703
+      }
+    ],
+    "networkInter

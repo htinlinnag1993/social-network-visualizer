@@ -1,11 +1,10 @@
 var Queue = require('./Queue');
 
 class Graph {
-    constructor(noOfVertices, adjList = new Map()) {
+    constructor(noOfVertices, adjList = new Map(), dist = [], pred = []) {
         this.noOfVertices = noOfVertices;
         this.AdjList = adjList;
     }
-
     addVertex(v) {
         this.AdjList.set(v, []);
     }
@@ -36,33 +35,73 @@ class Graph {
         });
         return obj;
     }
-    spBtwn2Vs(srcId, destId, startingId) {
-        console.log("Shortest Path between " + srcId + " and " + destId + ":");
+    getSPBtwn2Vs(srcId, destId, startingId) {
         var visited = Array(this.noOfVertices).fill(false);
-        var q = new Queue(), count = 0;
+        var q = new Queue();
         var src = srcId - startingId;
         var dest = destId - startingId;
         visited[src] = true;
+        this.dist[src] = 0;
         q.enqueue(srcId);
 
+        // Standard BFS algorithm
         while (q.size() > 0) {
             srcId = q.dequeue();
-            console.log(count + "->" +srcId + " ");
-            count++;
-
-            if (srcId === destId) break;
-            
+            src = srcId - startingId;
             var adjVsFromCurrentV = this.AdjList.get(srcId);
             for (var i of adjVsFromCurrentV) {
                 var vId = i;
                 var v = vId - startingId;
                 if (!visited[v]) {
                     visited[v] = true;
+                    this.dist[v] = this.dist[src] + 1;
+                    this.pred[v] = srcId;
                     q.enqueue(vId);
+                    // Stop BFS when we find destId
+                    if (vId === destId) return true;
                 }
             }
         } 
+        return false;
     }
+    // utility function to print the shortest distance  
+    // between source vertex and destination vertex 
+    printShortestDistance(srcId, destId, startingId) { 
+        // predecessor[i] array stores predecessor of 
+        // i and distance array stores distance of i 
+        // from s
+        const maxSafeInt = Number.MAX_SAFE_INTEGER;
+        this.dist = Array(this.noOfVertices).fill(maxSafeInt);
+        this.pred = Array(this.noOfVertices).fill(-1);
+        if (this.getSPBtwn2Vs(srcId, destId, startingId) === false) {  
+            console.log("Given source and destination are not connected"); 
+            return; 
+        } 
+        // path stores the shortest path 
+        var path = [];
+        var dest = destId - startingId;
+        var crawl = dest; 
+        var crawlId = destId;
+        path.push(crawlId); 
+        while (this.pred[crawl] !== -1) { 
+            path.push(this.pred[crawl]); 
+            crawlId = this.pred[crawl]; 
+            crawl = crawlId - startingId;
+        } 
+
+        // distance from source is in distance array
+        console.log("Shortest path length is : " + this.dist[dest]);
+        // printing path from source to destination 
+        console.log("Path is: "); 
+        for (var i = path.length - 1; i >= 0; i--) 
+            console.log( path[i] + " -> ");
+
+        return {
+            shortestDistance: this.dist[dest],
+            shortestPath: path
+        };
+    } 
+
     bfs(srcId, startingId) {
         var visited = Array(this.noOfVertices).fill(false);
         var q = new Queue(), count = 0;

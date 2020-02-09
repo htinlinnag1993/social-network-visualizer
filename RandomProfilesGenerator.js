@@ -117,7 +117,7 @@ class RandomProfilesGenerator {
     // In d3 forceSimulation, source and target are the actual indices of the nodes instead of the ids
     generateConnections() {
         const min = 0, max = min - 1 + this.numberOfProfiles;
-        const maxNumOfFriends = (max-1)/2;
+        const maxNumOfFriends = (max-1)/5;
 
         // During generating the random links between people, each profile's numberOfFriends is not the finalized number yet
         // as this is an undirected graph with adding edge data into both source's adjacency list and destination's adjacency list.
@@ -161,6 +161,11 @@ class RandomProfilesGenerator {
             links: this.connectionsList,
             graphInAdjList: graphInAdjListObj
         };
+
+        var src = 101,
+            dest = 150;
+        this.graphInAdjList.printShortestDistance(src, dest, 101);
+            
         return nodesAndLinks;
         // return JSON.stringify(nodesAndLinks);
     }
@@ -183,8 +188,6 @@ class RandomProfilesGenerator {
         var dob = faker.date.between(earliestValidDate, latestValidDate);
         return dob.getDate() + "/" + dob.getMonth() + "/" + dob.getFullYear();
     }
-
-    
 }
 
 module.exports = RandomProfilesGenerator;
