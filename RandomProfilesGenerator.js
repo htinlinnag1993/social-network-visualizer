@@ -104,6 +104,7 @@ class RandomProfilesGenerator {
 
             var weight = 5;
             this.connectionsList.push({
+                connectionId: sourceId + '-' + targetId, 
                 source: source,
                 target: targetId - this.startingId,
                 weight: weight,

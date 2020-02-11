@@ -96,6 +96,7 @@ class Graph {
         for (var i = path.length - 1; i >= 0; i--) 
             console.log( path[i] + " -> ");
 
+        path = path.reverse();
         return {
             shortestDistance: this.dist[dest],
             shortestPath: path

@@ -39,9 +39,12 @@ class RandomSN extends Component {
 
         /** variables for d3 visualization */
         var c10, tooltip, svgElement, mainG, force, 
-            link, node, profileName, circle, 
+            link, spLink, node, spCircle, profileName, circle, 
             profileImage, profileNames;
         var linkedByIndex;
+        var graph;
+        var profileSearchBars, profileSearchBarA, profileSearchBarB;
+        var nameToId;
     }
     componentDidMount() {
         this.setState({
@@ -49,6 +52,8 @@ class RandomSN extends Component {
             height: 800 - this.state.margin.top - this.state.margin.bottom, // before --> 700
         });
         M.AutoInit();   // Initializing the select box with empty options
+        this.profileSearchBars = document.querySelectorAll('.autocomplete');
+        M.Autocomplete.init(this.profileSearchBars, );
     }
     drawGraph = (nodes, links) => {
         // To prevent appending more than one graph
@@ -129,6 +134,9 @@ class RandomSN extends Component {
                         .enter()
                         .append("line");
         that.link.attr("class", "link")
+            .attr("id", (d) => {
+                return d.source + "-" + d.target; 
+            })
             // .attr("stroke-width", "2px")
             .attr("stroke-width",function(d){ return d.weight/10; })
             .style("stroke", function(d){return color("#6B6B6B")});
@@ -175,7 +183,8 @@ class RandomSN extends Component {
                             // .on("dblclick", function() {
                             //     that.handleDoubleClick(this);
                             // });
-                            .on('mouseover.tooltip', function(d) {
+                            // .on('mouseover.tooltip', function(d) {
+                            .on('click.tooltip', function(d) {
                                 that.tooltip.transition()
                                     .duration(300)
                                     .style("opacity", .8);
@@ -204,19 +213,21 @@ class RandomSN extends Component {
                                     // .style("box-shadow", "3px 3px 10px teal")
                                     // .style("pointer-events", "none");
                             })
-                            .on('mouseover.fade', that.fade(0))
-                            .on("mouseout.tooltip", function() {
+                            // .on('mouseover.fade', that.fade(0))
+                            .on('click.fade', that.fade(0))
+                            // .on("mouseout.tooltip", function() {
+                            .on("dblclick.tooltip", function() {
                                 that.tooltip.transition()
                                     .duration(100)
                                     .style("opacity", .8);
                                 that.tooltip.html("Click or hover on the profile you are interested in.");
                             })
-                            .on('mouseout.fade', that.fade(1))
-                            .on("mousemove", function() {
-                                that.tooltip.style("left", (d3.event.pageX) + "px")
-                                  .style("top", (d3.event.pageY + 10) + "px");
-                            })
-                            // .on('dblclick',that.fade(0));
+                            // .on('mouseout.fade', that.fade(1))
+                            .on('dblclick.fade', that.fade(1))
+                            // .on("mousemove", function() {
+                            //     that.tooltip.style("left", (d3.event.pageX) + "px")
+                            //       .style("top", (d3.event.pageY + 10) + "px");
+                            // })
         // Add a label to each node
         that.profileName = that.node.append("text")
                         // .attr("dx", 17)
@@ -283,7 +294,32 @@ class RandomSN extends Component {
             graphAppended: true
         });
 
-        M.AutoInit();
+        // For populating data for autocomplete search bar
+        that.profileSearchBarA = document.querySelector("#autocomplete-input-profile-a");
+        that.profileSearchBarB = document.querySelector("#autocomplete-input-profile-b");
+        var nodesDataObject = {};
+        that.nameToId = {};
+        this.state.nodes.forEach(function(element) {
+            nodesDataObject[element.name] = element.avatar;
+            that.nameToId[element.name] = element.id;
+        });
+        // M.AutoInit();
+        M.Autocomplete.init(this.profileSearchBarA, {
+            data: nodesDataObject,
+            limit: 'infinit',
+            minLength: 1,
+            onAutocomplete: function(val) {
+                that.handleProfileAChange(val);
+            }
+        });
+        M.Autocomplete.init(this.profileSearchBarB, {
+            data: nodesDataObject,
+            limit: 'infinit',
+            minLength: 1,
+            onAutocomplete: function(val) {
+                that.handleProfileBChange(val);
+            }
+        });
     }
 
     isConnected = (a, b) => {
@@ -546,11 +582,15 @@ class RandomSN extends Component {
         console.log(links);
         console.log(graphInAdjList);
         
-        var graph = new Graph(nodes.length, graphInAdjList);
-        console.log(graph.AdjList);
-        graph.setAdjustListMap(graphInAdjList);
-        console.log(graph.dist);
-        console.log(graph.printShortestDistance(101, 150, 101));
+        var tempGraph = new Graph(nodes.length, graphInAdjList);
+        console.log(tempGraph.AdjList);
+        tempGraph.setAdjustListMap(graphInAdjList);
+        console.log(tempGraph.dist);
+        console.log(tempGraph.printShortestDistance(101, 150, 101));
+        console.log(tempGraph);
+
+        this.graph = tempGraph;
+        console.log(this.graph.printShortestDistance(101, 150, 101));
     }
     displayProfilePics = e => {
         var that = this;    // To solve the scope problem between React and D3
@@ -558,6 +598,7 @@ class RandomSN extends Component {
             profilePicsDisplayed: e.target.checked
         });
         if (this.state.graphAppended) that.profileImage.style("opacity", this.state.profilePicsDisplayed ? 0 : 1);
+
     }
     displayProfileNames = e => {
         var that = this;    // To solve the scope problem between React and D3
@@ -579,33 +620,154 @@ class RandomSN extends Component {
     }
 
 
-    handleProfileAChange = e => {
+    handleProfileAChange = val => {
+        console.log(val);
+        console.log(this.nameToId[val]);
         this.setState({
-            selectedProfileA: e.target.value
+            selectedProfileA: Number(this.nameToId[val])
         });
-        console.log(e.target.value);
-        console.log(this.state.selectedProfileA);
 
+        // var that = this;
+
+        // var profileA = d3.select("[id='" + e.target.value + "']");
+        // console.log(profileA);
     }
-    handleProfileBChange = e => {
+    handleProfileBChange = val => {
+        console.log(val);
+        console.log(this.nameToId[val]);
         this.setState({
-            selectedProfileB: e.target.value
+            selectedProfileB: Number(this.nameToId[val])
         });
 
-        e.value = e.defaultValue;
+        // var that = this;
 
-        console.log(this.state.selectedProfileB);
+        // var profileB = d3.select("[id='" + e.target.value + "']");
+        // console.log(profileB);
+    }
+    findSPFromAtoB = e => {
+        var that =  this;
+        var srcId = this.state.selectedProfileA,
+            destId = this.state.selectedProfileB;
+        var obj = this.graph.printShortestDistance(srcId, destId, 101);
+        var arr = obj.shortestPath;
+        var temp = [],
+            tempReverseEdges = [];
+        if (arr.length > 2) {
+            for (var i = 0; i < arr.length-1; i++)
+                temp.push(arr[i] + '-' + arr[i+1]);
+            for (var i = arr.length-1; i > 0; i--) 
+                tempReverseEdges.push(arr[i] + '-' + arr[i-1]);
+        } else {
+            temp.push(arr[0]+ '-' + arr[1]);
+            tempReverseEdges.push(arr[1] + '-' + arr[0]);
+        }
+        console.log(temp);
+        console.log(tempReverseEdges);
+
+        if (that.spCircle) that.spCircle.remove();
+        that.spCircle = that.node.append("circle")
+                            .filter(function(d) { return arr.includes(d.id); })
+                            .attr("class", "spCircles")
+                            .attr("r", function(d){ return d.influence/2 > 25 ? d.influence/2 : 25; })
+                            .attr("stroke", function(d){ return that.c10(4); })
+                            .attr("fill", "none")
+                            .style("stroke-width", 5);
+
+        that.node.style('stroke-opacity', (d) => {
+                const thisOpacity = arr.includes(d.id) ? 1 : 0;
+                return thisOpacity;
+            })
+            .style('fill-opacity', (d) => {
+                const thisOpacity = arr.includes(d.id) ? 1 : 0;
+                return thisOpacity;
+            });
+        that.circle.style("fill", (d) => {
+                const thisFillColor = arr.includes(d.id) ? 1 : 0;
+                return (thisFillColor === 1) ? that.c10(d.zone - 2) : that.c10(d.zone + 2);
+            })
+            .attr("r", (d) => {
+                const thisOpacity = arr.includes(d.id) ? 1 : 0;
+                return (thisOpacity === 1) ? 
+                            (d.influence/2 > 7 ? d.influence/2 : 7) :
+                            (d.influence/2 > 5 ? d.influence/2 : 6);
+            }); 
+
+        // that.link.style('opacity', (d) => temp.includes(d.connectionId) ? 1: 0)
+        //         .style('stroke', (d) =>  temp.includes(d.connectionId) ? color("#FF1500") : color("#FFFFFF"));
+        that.link.style('opacity', (d) => {
+                if(temp.includes(d.connectionId) || tempReverseEdges.includes(d.connectionId)) {
+                    console.log(d.connectionId + " is drawn");
+                    return 1;
+                } else {
+                    return 0;
+                }
+            })
+            .style('stroke', (d) =>  {
+                if(temp.includes(d.connectionId) || tempReverseEdges.includes(d.connectionId)) {
+                    console.log(d.connectionId + " is drawn");
+                    return color("#FF1500");
+                } else {
+                    return color("#FFFFFF");
+                }
+            });
+        
+
+        that.profileImage.style('opacity', (d) => {
+                var thisOpacity = arr.includes(d.id) ? 1 : 0;
+                if (that.state.profilePicsDisplayed && thisOpacity === 1) thisOpacity = 1;
+                else thisOpacity = 0;
+                return thisOpacity;
+            })
+            .attr('x', (d) => {
+                var thisOpacity = arr.includes(d.id) ? 1 : 0;
+                if (that.state.profilePicsDisplayed && thisOpacity === 1) thisOpacity = 1;
+                else thisOpacity = 0;
+                return (thisOpacity === 1) ? -20 : -15;
+            })
+            .attr('y', (d) => {
+                var thisOpacity = arr.includes(d.id) ? 1 : 0;
+                if (that.state.profilePicsDisplayed && thisOpacity === 1) thisOpacity = 1;
+                else thisOpacity = 0;
+                return (thisOpacity === 1) ? -20 : -15;
+            })
+            .attr('height', (d) => {
+                var thisOpacity = arr.includes(d.id) ? 1 : 0;
+                if (that.state.profilePicsDisplayed && thisOpacity === 1) thisOpacity = 1;
+                else thisOpacity = 0;
+                return (thisOpacity === 1) ? 40 : 30;
+            })
+            .attr('width', (d) => {
+                var thisOpacity = arr.includes(d.id) ? 1 : 0;
+                if (that.state.profilePicsDisplayed && thisOpacity === 1) thisOpacity = 1;
+                else thisOpacity = 0;
+                return (thisOpacity === 1) ? 40 : 30;
+            });
+
+        that.profileName.style('opacity', (d) => {
+                var thisOpacity = arr.includes(d.id) ? 1 : 0;
+
+                if (that.state.profileNamesDisplayed && thisOpacity === 1) thisOpacity = 1;
+                else thisOpacity = 0;
+                return thisOpacity;
+            })
+            .attr("y", -25);
     }
     resetFromAtoB = e => {
-        this.setState({
-            selectedProfileA: 0,
-            selectedProfileB: 0
-        });
+        
+        document.getElementById("autocomplete-input-profile-a").value = "";
+        document.getElementById("autocomplete-input-profile-b").value = "";
+        console.log(document.getElementById("autocomplete-input-profile-a").value);
+        console.log(document.getElementById("autocomplete-input-profile-b").value);
 
-        e.value = e.defaultValue;
+        // this.setState({
+        //     selectedProfileA: 0,
+        //     selectedProfileB: 0
+        // });
 
-        console.log(this.state.selectedProfileA);
-        console.log(this.state.selectedProfileB);
+        // e.value = e.defaultValue;
+
+        // console.log(this.state.selectedProfileA);
+        // console.log(this.state.selectedProfileB);
     }
 
     render() {
@@ -677,40 +839,55 @@ class RandomSN extends Component {
                                             From A to B
                                         </div>
                                         <div className="card-action">
-                                            <div className="row">
-                                                <div className="input-field white col s12 m12 l12">
-                                                    {/* <span><label><h6>A:</h6></label></span> */}
-                                                    <select defaultValue={this.state.selectedProfileA} className="icons" id="profile-a"
-                                                        onChange={this.handleProfileAChange}>
-                                                            <option value="0">Profile A</option>
-                                                            {this.state.nodes.map((element, key) => {
-                                                                return (
-                                                                    <option value={element.id} key={key}
-                                                                        data-icon={element.avatar} className="left circle">
-                                                                        {element.name}
-                                                                    </option>
-                                                                )})
-                                                            }
-                                                    </select>
-                                                    {/* <span><label><h6>B:</h6></label></span> */}
-                                                    <select defaultValue={this.state.selectedProfileB} className="icons" id="profile-b"
-                                                        onChange={this.handleProfileBChange}>
-                                                            <option value="0">Profile B</option>
-                                                            {this.state.nodes.map((element, key) => {
-                                                                return (
-                                                                    <option value={element.id} key={key}
-                                                                        data-icon={element.avatar} className="left circle">
-                                                                        {element.name}
-                                                                    </option>
-                                                                )})
-                                                            }
-                                                    </select>
-                                                </div>
+                                            <div className="row" style={{marginBottom: "0px"}}>
+                                                <form>
+                                                    <div className="input-field col s10 m10 l10 white">
+                                                        <input type="text" id="autocomplete-input-profile-a" className="autocomplete" />
+                                                        <label htmlFor="autocomplete-input-profile-a">Search for A</label>
+                                                    </div>
+                                                    <div className="col s2 m2 l2">
+                                                        <button className="waves-effect waves-light teal darken-2 btn" type="reset"
+                                                            style={{
+                                                                width: "20px",
+                                                                height: "53px",
+                                                                marginTop: "1rem",
+                                                                marginBottom: "1rem",
+                                                                textAlign: "center",
+                                                                padding: "2px"
+                                                            }}>x</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <div className="row" style={{marginBottom: "0px"}}>
+                                                <form>
+                                                    <div className="input-field col s10 m10 l10 white">
+                                                        <input type="text" id="autocomplete-input-profile-b" className="autocomplete" />
+                                                        <label htmlFor="autocomplete-input-profile-b">Search for B</label>
+                                                    </div>
+                                                    <div className="col s2 m2 l2">
+                                                        <button className="waves-effect waves-light teal darken-2 btn" type="reset"
+                                                            style={{
+                                                                width: "20px",
+                                                                height: "53px",
+                                                                marginTop: "1rem",
+                                                                marginBottom: "1rem",
+                                                                textAlign: "center",
+                                                                padding: "2px"
+                                                            }}>x</button>
+                                                    </div>
+                                                </form>
                                             </div>
                                             <div className="row">
-                                                <div className="col s12">
+                                                <div className="col s5 m5 l6" style={{padding: "0 0"}}>
+                                                    <button onClick={this.findSPFromAtoB}
+                                                            className="waves-effect waves-light teal darken-2 btn left"
+                                                            id="findsp_fromAtoB">
+                                                        Find
+                                                    </button>
+                                                </div>
+                                                <div className="col s7 m7 l6">
                                                     <button onClick={this.resetFromAtoB}
-                                                            className="waves-effect waves-light teal darken-2 btn"
+                                                            className="waves-effect waves-light teal darken-2 btn left"
                                                             id="reset_fromAtoB_setting">
                                                         Reset
                                                     </button>
