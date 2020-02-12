@@ -37,10 +37,15 @@ class RandomSN extends Component {
         this.handleProfileBChange = this.handleProfileBChange.bind(this);
 
         /** variables for d3 visualization */
-        var c10, tooltip, tooltipAboveGraph,
-            svgContainer, svgElement, borderPath, mainG, force, 
-            link, spLink, node, spCircle, arrowHeads, edgepaths,
-            profileName, circle, profileImage, profileNames;
+        var c10, tooltip, 
+            // tooltipAboveGraph,
+            svgContainer, svgElement, 
+            // borderPath, 
+            mainG, force, 
+            link, spLink, node, spCircle, 
+            // arrowHeads, edgepaths,
+            profileName, circle, profileImage, profileNames,
+            spDirectionSVG, spDirectionRects, spDirectionLinks, spDirectionArrowHeads;
         var linkedByIndex;
         var graph;
         var profileSearchBars, profileSearchBarA, profileSearchBarB;
@@ -572,7 +577,69 @@ class RandomSN extends Component {
                             .attr("fill", "none")
                             .style("stroke-width", 7);
 
+
+        // var nodes4SPDirection = [];
+        // var count = 0;
+        // that.state.nodes.forEach((d) => {
+        //     if (arr.includes(d.id)) {
+        //         count++;
+        //         d.x = (400/4) + (count * 40);
+        //         nodes4SPDirection.push(d);
+        //     }
+        // });
+        // // Source node position of the link must account for radius of the circle
+        // const linkSource = {
+        //     x: nodes4SPDirection[0].x + nodes4SPDirection[0].r,
+        //     y: nodes4SPDirection[0].y
+        // };
+
+        // // Target node position of the link must account for radius + arrow width
+        // const linkTarget = {
+        //     x: nodes4SPDirection[1].x - nodes4SPDirection[0].r - 20,
+        //     y: nodes4SPDirection[1].y
+        // };
+        // // Define a horizontal link from the first circle to the second
+        // const links = d3.linkHorizontal()
+        //                 .x(d => d.x)
+        //                 .y(d => d.y)({
+        //                     source: linkSource,
+        //                     target: linkTarget
+        //                 });
         
+        // that.spDirectionSVG = d3.select("#sp-direction-container")
+        //                         .append('svg')
+        //                         .attr('viewBox', [0, 0, 400, 200]);
+        // // Add the arrowhead marker definition to the svg element
+        // that.spDirectionArrowHeads = that.spDirectionSVG.append('defs')
+        //                                 .append('marker')
+        //                                 .attr('id', 'arrow')
+        //                                 .attr('viewBox', [0, 0, 20, 20])
+        //                                 .attr('refX', 20/2)
+        //                                 .attr('refY', 20/2)
+        //                                 .attr('markerWidth', 20)
+        //                                 .attr('markerHeight', 20)
+        //                                 .attr('orient', 'auto-start-reverse')
+        //                                 .append('path')
+        //                                 .attr('d', d3.line()([[0, 0], [0, 20], [20, 10]]))
+        //                                 .attr('stroke', 'black');
+        // // Add circles to the svg element
+        // that.spDirectionRects = that.spDirectionSVG.selectAll('circle')
+        //                             .data(nodes4SPDirection)
+        //                             .join('circle')
+        //                             .attr('cx', d => d.x)
+        //                             .attr('cy', 60)
+        //                             .attr('r', 10)
+        //                             .style('fill', 'green');
+        // // Add the link with arrowhead at the end
+        // that.spDirectionLinks = that.spDirectionSVG.append('path')
+        //                             .attr('d', links)
+        //                             .attr('marker-end', 'url(#arrow)')
+        //                             .attr('stroke', 'black')
+        //                             .attr('fill', 'black');
+        
+
+
+
         // // that.link.style('opacity', (d) => temp.includes(d.connectionId) ? 1: 0)
         // //         .style('stroke', (d) =>  temp.includes(d.connectionId) ? color("#FF1500") : color("#FFFFFF"));
         // that.link.style('opacity', (d) => {
@@ -591,6 +658,9 @@ class RandomSN extends Component {
             //         return color("#FFFFFF");
             //     }
             // });
+    }
+    resetProfileSearch = () => {
+        if (this.spCircle) this.spCircle.remove();
     }
     resetFromAtoB = e => {
         document.getElementById("autocomplete-input-profile-a").value = "";
@@ -705,7 +775,7 @@ class RandomSN extends Component {
                                                         <label htmlFor="autocomplete-input-profile-a">Search for A</label>
                                                     </div>
                                                     <div className="col s2 m2 l2">
-                                                        <button className="waves-effect waves-light teal darken-2 btn" type="reset"
+                                                        <button className="waves-effect waves-light teal darken-2 btn" onClick={this.resetProfileSearch} type="reset"
                                                             style={{
                                                                 width: "20px",
                                                                 height: "53px",
@@ -724,7 +794,7 @@ class RandomSN extends Component {
                                                         <label htmlFor="autocomplete-input-profile-b">Search for B</label>
                                                     </div>
                                                     <div className="col s2 m2 l2">
-                                                        <button className="waves-effect waves-light teal darken-2 btn" type="reset"
+                                                        <button className="waves-effect waves-light teal darken-2 btn" onClick={this.resetProfileSearch} type="reset"
                                                             style={{
                                                                 width: "20px",
                                                                 height: "53px",
@@ -773,7 +843,7 @@ class RandomSN extends Component {
                         <div className="row">
                             <div className="black col s12 m12 l12" align="center">
                                 <div className="row">
-                                    <div className="col s12 m4 l4">
+                                    <div className="col s12 m3 l3" style={{paddingTop:"10px"}}>
                                         <div id="clear-selection-btn-container">
                                             <button className="waves-effect waves-light teal darken-2 white-text btn left"
                                                 onClick={this.clearSelection}>
@@ -786,9 +856,45 @@ class RandomSN extends Component {
                                                     className="waves-effect waves-light teal darken-2 white-text btn right" /> */}
                                         </div>
                                     </div>
-                                    <div id="tooltip-above-graph-container" className="col s12 m8 l8"></div>
+                                    <div className="col s12 m9 l9" style={{paddingTop:"10px"}}>
+                                        {/* <div id="sp-direction-container" className="white"> */}
+                                        <div id="sp-direction-container">
+                                            <div  className="row" id="sp-direction-placeholder">
+                                                <div className="col s4 m4 l4">
+                                                    <button className="grey darken-3 white-text btn" 
+                                                        style={{
+                                                            borderRadius: "8px",
+                                                            width: "auto",
+                                                            height: "auto"
+                                                        }}>
+                                                            Profile A
+                                                    </button>
+                                                </div>
+                                                <div className="col s4 m4 l4">
+                                                    <button className="black white-text btn" 
+                                                        style={{
+                                                            borderRadius: "8px",
+                                                            width: "auto",
+                                                            height: "auto"
+                                                        }}>
+                                                            ..........
+                                                    </button>
+                                                </div>
+                                                <div className="col s4 m4 l4">
+                                                    <button className="grey darken-3 white-text btn" 
+                                                        style={{
+                                                            borderRadius: "8px",
+                                                            width: "auto",
+                                                            height: "auto"
+                                                        }}>
+                                                            Profile B
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {/* <div id="tooltip-above-graph-container" className="col s12 m8 l8"></div> */}
                                 </div>
-                                
                                 <div id="svg-container"></div>
                             </div>
                             {/* <div id={'#' + this.props.id}></div> */}
