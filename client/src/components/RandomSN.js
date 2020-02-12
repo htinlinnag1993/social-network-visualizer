@@ -23,7 +23,6 @@ class RandomSN extends Component {
             graphAppended: false,
             profilePicsDisplayed: true,
             profileNamesDisplayed: false,
-            // oneNodeDblClicked: false,
             graphInAdjList: new Map(),
             selectedProfileA: 0,
             selectedProfileB: 0,
@@ -38,9 +37,10 @@ class RandomSN extends Component {
         this.handleProfileBChange = this.handleProfileBChange.bind(this);
 
         /** variables for d3 visualization */
-        var c10, tooltip, svgElement, mainG, force, 
-            link, spLink, node, spCircle, profileName, circle, 
-            profileImage, profileNames;
+        var c10, tooltip, tooltipAboveGraph,
+            svgContainer, svgElement, borderPath, mainG, force, 
+            link, spLink, node, spCircle, arrowHeads, edgepaths,
+            profileName, circle, profileImage, profileNames;
         var linkedByIndex;
         var graph;
         var profileSearchBars, profileSearchBarA, profileSearchBarB;
@@ -51,14 +51,41 @@ class RandomSN extends Component {
             width: 800 - this.state.margin.left - this.state.margin.right, // before --> 960 -
             height: 800 - this.state.margin.top - this.state.margin.bottom, // before --> 700
         });
-        M.AutoInit();   // Initializing the select box with empty options
+        M.AutoInit();   // Initialize with empty options
+        // Initialize the profile search bars with autocomplete feature but with empty data
         this.profileSearchBars = document.querySelectorAll('.autocomplete');
         M.Autocomplete.init(this.profileSearchBars, );
+        // Draw the svg image with its border
+        this.drawSVG();
+    }
+    drawSVG = () => {
+        this.svgContainer = d3.select("#svg-container");
+        // Create an SVG element and append it to the DOM
+        this.svgElement = this.svgContainer.append("svg")
+                            .attr("viewBox", `0 0 800 800`) // before --> 960 and 700
+                            // .attr("width", 960)
+                            // .attr("height", 700)
+                            .attr("id", "rsnGraph")
+                            .attr("border", 1)
+                            .style("background-color", "black")
+                            // .call(d3.zoom().on("zoom", function () {
+                            //     that.svgElement.attr("transform", d3.event.transform)
+                            //  }));
+        // Creat a border around svgElement
+        // this.borderPath = this.svgElement.append("rect")
+        //                         .attr("x", 0)
+        //                         .attr("y", 0)
+        //                         .attr("height", 800)
+        //                         .attr("width", 800)
+        //                         .style("stroke", "white")
+        //                         .style("fill", "none")
+        //                         .style("stroke-width", 1);
     }
     drawGraph = (nodes, links) => {
-        // To prevent appending more than one graph
+        // To prevent appending more than one graph & one tooltip
         if (this.state.graphAppended) {
-            d3.select("#rsnGraph").remove();
+            this.svgElement.remove();
+            this.drawSVG();
             d3.select('#tooltip').remove();
             this.setState({
                 graphAppended: false
@@ -69,44 +96,60 @@ class RandomSN extends Component {
         var that = this;
         // Color Scale
         // that.c10 = d3.scaleOrdinal(d3.schemeCategory10);
-        // that.c10 = d3.scaleOrdinal(d3.schemeCategory10).domain(d3.range(0, 9));
-        // for (var i = 0; i < 100; i++) console.log(i + " ---> " + that.c10(i));
-        // console.log(0 + " ---> " + that.c10(0));
-        // console.log(1 + " ---> " + that.c10(1));
-        // console.log(2 + " ---> " + that.c10(2));
-        // console.log(3 + " ---> " + that.c10(3));
-        // that.c10 = d3.scaleLinear(d3.schemeCategory10);
         that.c10 = d3.scaleLinear().domain([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
-                        .range(["white", "grey", "black", "steelblue", "teal", "green", "yellow", "orange", "red", "purple"]);
-        
+                    .range(["white", "grey", "black", "steelblue", "teal", "green", "yellow", "orange", "red", "purple"]);
+
+        // that.arrowHeads = that.svgElement.append('defs')
+        //                     .append('marker')
+        //                     .attr('id','arrowhead')
+        //                     .attr('viewBox','-0 -5 10 10')
+        //                     .attr('refX',13)
+        //                     .attr('refY',0)
+        //                     .attr('orient','auto')
+        //                     .attr('markerWidth',30)
+        //                     .attr('markerHeight',30)
+        //                     .attr('xoverflow','visible')
+        //                     .append('svg:path')
+        //                     .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
+        //                     .attr('fill', '#999')
+        //                     .style('stroke','none');
+
         // Tooltip to display profile info on the side
         that.tooltip = d3.select("#tooltip-container")
-            .append("div")
-            .attr("id", "tooltip")
-            .style("opacity", .8)
-            .style("max-width", "300px")
-            .style("width", "auto")
-            .style("height", "auto")
-            .style("text-align", "left")
-            .style("word-wrap", "break-word")
-            .style("padding", "5px")
-            .style("border-style", "solid")
-            .style("border-radius", "4px")
-            .style("border-width", "1px")
-            .style("box-shadow", "3px 3px 10px teal")
-            .style("pointer-events", "none");
-        that.tooltip.html("Click or hover on the profile you are interested in.");
-        // Create an SVG element and append it to the DOM
-        that.svgElement = d3.select("#svg-container")
-                            .append("svg")
-                            .attr("viewBox", `0 0 800 800`) // before --> 960 and 700
-                            // .attr("width", 960)
-                            // .attr("height", 700)
-                            .attr("id", "rsnGraph")
-                            .style("background-color", "black")
-                            // .call(d3.zoom().on("zoom", function () {
-                            //     that.svgElement.attr("transform", d3.event.transform)
-                            //  }));
+                        .append("div")
+                        .attr("id", "tooltip")
+                        .style("opacity", .8)
+                        .style("max-width", "300px")
+                        .style("width", "auto")
+                        .style("height", "auto")
+                        .style("text-align", "left")
+                        .style("word-wrap", "break-word")
+                        .style("padding", "5px")
+                        .style("border-style", "solid")
+                        .style("border-radius", "4px")
+                        .style("border-width", "1px")
+                        .style("box-shadow", "3px 3px 10px teal")
+                        .style("pointer-events", "none");
+        that.tooltip.html("Click on the profile you want to view." +
+                            "<p/> Double-click to unselect.");
+
+        // that.tooltipAboveGraph = d3.select("#tooltip-above-graph-container")
+        // //  that.tooltipAboveGraph = d3.select("#svg-container")
+        //                         .append("div")	
+        //                         .attr("id", "tooltip-above-graph")				
+        //                         .style("opacity", 0)                
+        //                         .style("position", "absolute")
+        //                         .style("width", "auto")					
+        //                         .style("height", "auto")					
+        //                         .style("padding", "2px")
+        //                         .style("background", "teal")	
+        //                         .style("border", "0px")		
+        //                         .style("border-radius", "8px")	
+        //                         .style("text-align", "center")
+        //                         .style("word-wrap", "break-word")
+        //                         .style("font", "20px sans-serif")
+        //                         .style("pointer-events", "none");	
+        
         // Create an g element and append it to the SVG element
         that.mainG = that.svgElement.append("g")
                             .attr("transform","translate(" + this.state.margin.left + "," + this.state.margin.top + ")");	
@@ -139,6 +182,7 @@ class RandomSN extends Component {
             })
             // .attr("stroke-width", "2px")
             .attr("stroke-width",function(d){ return d.weight/10; })
+            // .attr('marker-end','url(#arrowhead)')
             .style("stroke", function(d){return color("#6B6B6B")});
             // .on('mouseover.tooltip', function(d) {
             //     tooltip.transition()
@@ -160,6 +204,16 @@ class RandomSN extends Component {
             // tooltip.style("left", (d3.event.pageX) + "px")
             //     .style("top", (d3.event.pageY + 10) + "px");
             // });
+
+        // that.edgepaths = that.svgElement.selectAll(".edgepath")
+        //                     .data(links)
+        //                     .enter()
+        //                     .append('path')
+        //                     .attr('class', 'edgepath')
+        //                     .attr('fill-opacity', 0)
+        //                     .attr('stroke-opacity', 0)
+        //                     .attr('id', function (d, i) {return 'edgepath' + i})
+        //                     .style("pointer-events", "none");
         //Add nodes to SVG
         that.node = that.mainG.selectAll(".node")
                         .select(".g")
@@ -174,16 +228,20 @@ class RandomSN extends Component {
                             .on("start", dragstarted)
                             .on("drag", dragged)
                             .on("end", dragended))
-                            // .on("mouseover", function() {
-                            //     that.handleMouseOver(this);
-                            // })
-                            // .on("mouseout", function() {
-                            //     that.handleMouseOut(this);
-                            // })
-                            // .on("dblclick", function() {
-                            //     that.handleDoubleClick(this);
-                            // });
                             // .on('mouseover.tooltip', function(d) {
+                            // .on("mouseover", function(d) {
+                            //     that.tooltipAboveGraph.transition()		
+                            //         .duration(200)		
+                            //         .style("opacity", .9);		
+                            //     that.tooltipAboveGraph.html(d.name)	
+                            //         // .style("left", (d3.event.pageX) + "px")		
+                            //         // .style("top", (d3.event.pageY - 28) + "px");
+                            //     })					
+                            // .on("mouseout", function(d) {		
+                            //     that.tooltipAboveGraph.transition()		
+                            //         .duration(500)		
+                            //         .style("opacity", 0);	
+                            // })
                             .on('click.tooltip', function(d) {
                                 that.tooltip.transition()
                                     .duration(300)
@@ -214,20 +272,23 @@ class RandomSN extends Component {
                                     // .style("pointer-events", "none");
                             })
                             // .on('mouseover.fade', that.fade(0))
-                            .on('click.fade', that.fade(0))
                             // .on("mouseout.tooltip", function() {
-                            .on("dblclick.tooltip", function() {
-                                that.tooltip.transition()
-                                    .duration(100)
-                                    .style("opacity", .8);
-                                that.tooltip.html("Click or hover on the profile you are interested in.");
-                            })
                             // .on('mouseout.fade', that.fade(1))
-                            .on('dblclick.fade', that.fade(1))
                             // .on("mousemove", function() {
                             //     that.tooltip.style("left", (d3.event.pageX) + "px")
                             //       .style("top", (d3.event.pageY + 10) + "px");
                             // })
+                            .on('click.fade', that.fade(0))
+                            // .on("dblclick.tooltip", function() {
+                            //     that.tooltip.transition()
+                            //         .duration(100)
+                            //         .style("opacity", .8);
+                            //     that.tooltip.html("Click on the profile you want to view." +
+                            //                         "<p/> Double-click to unselect.");
+                            // })
+                            // .on('dblclick.fade', that.fade(1))
+                            
+                            
         // Add a label to each node
         that.profileName = that.node.append("text")
                         // .attr("dx", 17)
@@ -248,10 +309,10 @@ class RandomSN extends Component {
         that.profileImage = that.node.append("image")
                             .attr("xlink:href",  function(d) { return d.avatar;})
                             .attr("class", "profilePics")
-                            .attr("x", function(d) { return -20;})
-                            .attr("y", function(d) { return -20;})
-                            .attr("height", 40)
-                            .attr("width", 40)
+                            .attr("x", function(d) { return -15;})
+                            .attr("y", function(d) { return -15;})
+                            .attr("height", 30)
+                            .attr("width", 30)
                             .style("opacity", this.state.profilePicsDisplayed ? 1 : 0);
         //This function will be executed for every tick of force layout 
         that.force.on("tick", function(){
@@ -266,6 +327,10 @@ class RandomSN extends Component {
                     .attr("y2", function(d){ return d.target.y; });
                 //Shift node a little
                 that.node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+            
+            // that.edgepaths.attr('d', function (d) {
+            //         return 'M ' + d.source.x + ' ' + d.source.y + ' L ' + d.target.x + ' ' + d.target.y;
+            //     });
         });
         function dragstarted(d) {
             if (!d3.event.active) that.force.alphaTarget(0.3).restart();
@@ -348,7 +413,6 @@ class RandomSN extends Component {
                 .style('stroke', function (o) {
                     const thisOpacity = that.isConnected(d, o) ? 1 : opacity;
                     const thisStrokeColor = (thisOpacity === 1) ? color("#6B6B6B") : color("#FFFFFF");
-
                     // this.setAttribute('stroke', thisStrokeColor);
                     return thisStrokeColor;
             });
@@ -385,183 +449,18 @@ class RandomSN extends Component {
 
             that.profileName.style('opacity', function (o) {
                     var thisOpacity = that.isConnected(d, o) ? 1 : opacity;
-
                     if (that.state.profileNamesDisplayed && thisOpacity === 1) thisOpacity = 1;
                     else thisOpacity = 0;
                     return thisOpacity;
                 })
-                .attr("y", -25);
+                .attr("y", function (o) {
+                    var thisOpacity = (o === d) ? 1 : opacity;
+                    if (that.state.profileNamesDisplayed && thisOpacity === 1) thisOpacity = 1;
+                    else thisOpacity = 0;
+                    return (thisOpacity === 1) ? -25 : -20;
+                });
         };
     }
-    // handleMouseOver = (d3ProfileNode) => {
-    //     var that = this;    // To solve the scope problem between React and D3
-    //     if (!that.state.oneNodeDblClicked) {
-    //         d3.selectAll(".profileCircles")
-    //             .style("opacity", 0.6);
-    //         d3.select(d3ProfileNode)
-    //             .select(".profileCircles")
-    //             .attr("r", function(d){ return d.influence/2 > 10 ? d.influence/2 : 10; })
-    //             .style("opacity", 1);
-    //         // If profilePicsDisplayed is turned on
-    //         if (that.state.profilePicsDisplayed) {
-    //             d3.selectAll(".profilePics")
-    //                 .style("opacity", 0.6);
-    //             d3.select(d3ProfileNode)
-    //                 .select(".profilePics")
-    //                 .attr("x", function(d) { return -20;})
-    //                 .attr("y", function(d) { return -20;})
-    //                 .attr("height", 40)
-    //                 .attr("width", 40)
-    //                 .style("opacity", 1);
-    //         }
-    //         d3.select(d3ProfileNode)
-    //             .select(".profileNames")
-    //             .attr("dx", 23)
-    //             .attr("dy", "0.40em")
-    //             .style("opacity", 1);
-    //     }
-    // }
-    // handleMouseOut = (d3ProfileNode) => {
-    //     var that = this;    // To solve the scope problem between React and D3
-    //     if (!that.state.oneNodeDblClicked) {
-    //         d3.selectAll(".profileCircles")
-    //             .attr("r", function(d){ return d.influence/2 > 7 ? d.influence/2 : 7; })
-    //             .style("opacity", 1);
-    //         // If profilePicsDisplayed is turned on
-    //         if (that.state.profilePicsDisplayed) {
-    //             d3.selectAll(".profilePics")
-    //             .attr("x", function(d) { return -15;})
-    //             .attr("y", function(d) { return -15;})
-    //             .attr("height", 30)
-    //             .attr("width", 30)
-    //             .style("opacity", 1);
-    //         }
-    //         // If profileNamesDisplayed is not turned on
-    //         if (!that.state.profileNamesDisplayed) { 
-    //             d3.select(d3ProfileNode)
-    //                 .select(".profileNames")
-    //                 .attr("dx", 17)
-    //                 .attr("dy", "0.35em")
-    //                 .style("opacity", 0)
-    //         }
-    //     }
-    // }
-    // handleDoubleClick = (d3ProfileNode) => {
-    //     var that = this;
-    //     if (that.state.oneNodeDblClicked) {
-    //         that.setState({
-    //             oneNodeDblClicked: false
-    //         });
-    //         /** Edit the circles */
-    //         // Show all circles
-    //         d3.selectAll(".profileCircles")
-    //             .attr("r", function(d){ return d.influence/2 > 7 ? d.influence/2 : 7; })
-    //             .style("opacity", 1);
-
-    //         /** Edit the profile pics */
-    //         // If profilePicsDisplayed is turned on
-    //         if (that.state.profilePicsDisplayed) {
-    //             d3.selectAll(".profilePics")
-    //             .attr("x", function(d) { return -15;})
-    //             .attr("y", function(d) { return -15;})
-    //             .attr("height", 30)
-    //             .attr("width", 30)
-    //             .style("opacity", 1);
-    //         }
-
-    //         /** Edit the profile names */
-    //         // If profileNamesDisplayed is not turned on
-    //         if (!that.state.profileNamesDisplayed) { 
-    //             d3.selectAll(".profileNames")
-    //                 .attr("dx", 17)
-    //                 .attr("dy", "0.35em")
-    //                 .style("opacity", 0)
-    //         } else {
-    //             d3.selectAll(".profileNames")
-    //                 .attr("dx", 17)
-    //                 .attr("dy", "0.35em")
-    //                 .style("opacity", 1);
-    //         }
-    //     } else {
-    //         that.setState({
-    //             oneNodeDblClicked: true
-    //         });
-    //         /** Edit the circles */
-    //         // Fade all circles
-    //         d3.selectAll(".profileCircles")
-    //             .style("opacity", 0.2);
-    //         // Highlight the double-clicked circle
-    //         d3.select(d3ProfileNode)
-    //             .select(".profileCircles")
-    //             .attr("r", function(d){ return d.influence/2 > 12 ? d.influence/2 : 12; })
-    //             .style("opacity", 1);
-
-    //         /** Edit the profile pics */
-    //         // If profilePicsDisplayed is turned on
-    //         if (that.state.profilePicsDisplayed) {
-    //             d3.selectAll(".profilePics")
-    //                 .style("opacity", 0.2);
-    //             d3.select(d3ProfileNode)
-    //                 .select(".profilePics")
-    //                 .attr("x", function(d) { return -30;})
-    //                 .attr("y", function(d) { return -30;})
-    //                 .attr("height", 60)
-    //                 .attr("width", 60)
-    //                 .style("opacity", 1);
-    //         }
-
-    //         /** Edit the profile names */
-    //         // If profileNamesDisplayed is not turned on
-    //         if (!that.state.profileNamesDisplayed) {
-    //             d3.select(d3ProfileNode)
-    //                 .select(".profileNames")
-    //                 .attr("dx", 17)
-    //                 .attr("dy", "0.35em")
-    //                 .style("opacity", 0)
-    //         }
-    //         d3.select(d3ProfileNode)
-    //             .select(".profileNames")
-    //             .attr("dx", 30)
-    //             .attr("dy", "0.45em")
-    //             .style("opacity", 1);
-
-    //         var dblClickedV = d3ProfileNode.id;
-    //         var currentVAdjList = this.state.graphInAdjList[dblClickedV];
-
-    //         console.log(dblClickedV);
-    //         console.log(currentVAdjList);
-
-    //         d3.selectAll(".links")
-    //                 .style("opacity", 0.1);
-            
-    //         /** */
-    //         for (var v of currentVAdjList) {
-    //             var currentNode = d3.select("[id='"+ v + "']");
-
-    //             /** Edit the profile circle */
-    //             currentNode.select(".profileCircles")
-    //                 .attr("r", function(d){ return d.influence/2 > 10 ? d.influence/2 : 10; })
-    //                 .style("opacity", 1);
-
-    //             /** Edit the profile pic */
-    //             currentNode.select(".profilePics")
-    //                 .attr("x", function(d) { return -20;})
-    //                 .attr("y", function(d) { return -20;})
-    //                 .attr("height", 40)
-    //                 .attr("width", 40)
-    //                 .style("opacity", 1);
-                
-    //             /** Edit the profile name */
-    //             currentNode.select(".profileNames")
-    //                 .attr("dx", 23)
-    //                 .attr("dy", "0.40em")
-    //                 .style("opacity", 1);
-
-    //             /** Edit the related links */
-        
-    //         }
-    //     } 
-    // }
 
     showGraph = async () => {
         // Get and set the external random data from api for the social network
@@ -668,96 +567,38 @@ class RandomSN extends Component {
         that.spCircle = that.node.append("circle")
                             .filter(function(d) { return arr.includes(d.id); })
                             .attr("class", "spCircles")
-                            .attr("r", function(d){ return d.influence/2 > 25 ? d.influence/2 : 25; })
+                            .attr("r", function(d){ return d.influence/2 > 20 ? d.influence/2 : 20; })
                             .attr("stroke", function(d){ return that.c10(4); })
                             .attr("fill", "none")
-                            .style("stroke-width", 5);
+                            .style("stroke-width", 7);
 
-        that.node.style('stroke-opacity', (d) => {
-                const thisOpacity = arr.includes(d.id) ? 1 : 0;
-                return thisOpacity;
-            })
-            .style('fill-opacity', (d) => {
-                const thisOpacity = arr.includes(d.id) ? 1 : 0;
-                return thisOpacity;
-            });
-        that.circle.style("fill", (d) => {
-                const thisFillColor = arr.includes(d.id) ? 1 : 0;
-                return (thisFillColor === 1) ? that.c10(d.zone - 2) : that.c10(d.zone + 2);
-            })
-            .attr("r", (d) => {
-                const thisOpacity = arr.includes(d.id) ? 1 : 0;
-                return (thisOpacity === 1) ? 
-                            (d.influence/2 > 7 ? d.influence/2 : 7) :
-                            (d.influence/2 > 5 ? d.influence/2 : 6);
-            }); 
-
-        // that.link.style('opacity', (d) => temp.includes(d.connectionId) ? 1: 0)
-        //         .style('stroke', (d) =>  temp.includes(d.connectionId) ? color("#FF1500") : color("#FFFFFF"));
-        that.link.style('opacity', (d) => {
-                if(temp.includes(d.connectionId) || tempReverseEdges.includes(d.connectionId)) {
-                    console.log(d.connectionId + " is drawn");
-                    return 1;
-                } else {
-                    return 0;
-                }
-            })
-            .style('stroke', (d) =>  {
-                if(temp.includes(d.connectionId) || tempReverseEdges.includes(d.connectionId)) {
-                    console.log(d.connectionId + " is drawn");
-                    return color("#FF1500");
-                } else {
-                    return color("#FFFFFF");
-                }
-            });
         
-
-        that.profileImage.style('opacity', (d) => {
-                var thisOpacity = arr.includes(d.id) ? 1 : 0;
-                if (that.state.profilePicsDisplayed && thisOpacity === 1) thisOpacity = 1;
-                else thisOpacity = 0;
-                return thisOpacity;
-            })
-            .attr('x', (d) => {
-                var thisOpacity = arr.includes(d.id) ? 1 : 0;
-                if (that.state.profilePicsDisplayed && thisOpacity === 1) thisOpacity = 1;
-                else thisOpacity = 0;
-                return (thisOpacity === 1) ? -20 : -15;
-            })
-            .attr('y', (d) => {
-                var thisOpacity = arr.includes(d.id) ? 1 : 0;
-                if (that.state.profilePicsDisplayed && thisOpacity === 1) thisOpacity = 1;
-                else thisOpacity = 0;
-                return (thisOpacity === 1) ? -20 : -15;
-            })
-            .attr('height', (d) => {
-                var thisOpacity = arr.includes(d.id) ? 1 : 0;
-                if (that.state.profilePicsDisplayed && thisOpacity === 1) thisOpacity = 1;
-                else thisOpacity = 0;
-                return (thisOpacity === 1) ? 40 : 30;
-            })
-            .attr('width', (d) => {
-                var thisOpacity = arr.includes(d.id) ? 1 : 0;
-                if (that.state.profilePicsDisplayed && thisOpacity === 1) thisOpacity = 1;
-                else thisOpacity = 0;
-                return (thisOpacity === 1) ? 40 : 30;
-            });
-
-        that.profileName.style('opacity', (d) => {
-                var thisOpacity = arr.includes(d.id) ? 1 : 0;
-
-                if (that.state.profileNamesDisplayed && thisOpacity === 1) thisOpacity = 1;
-                else thisOpacity = 0;
-                return thisOpacity;
-            })
-            .attr("y", -25);
+        // // that.link.style('opacity', (d) => temp.includes(d.connectionId) ? 1: 0)
+        // //         .style('stroke', (d) =>  temp.includes(d.connectionId) ? color("#FF1500") : color("#FFFFFF"));
+        // that.link.style('opacity', (d) => {
+        //         if(temp.includes(d.connectionId) || tempReverseEdges.includes(d.connectionId)) {
+        //             console.log(d.connectionId + " is drawn");
+        //             return 1;
+        //         } else {
+        //             return 0;
+        //         }
+        //     })
+            // .style('stroke', (d) =>  {
+            //     if(temp.includes(d.connectionId) || tempReverseEdges.includes(d.connectionId)) {
+            //         console.log(d.connectionId + " is drawn");
+            //         return color("#FF1500");
+            //     } else {
+            //         return color("#FFFFFF");
+            //     }
+            // });
     }
     resetFromAtoB = e => {
-        
         document.getElementById("autocomplete-input-profile-a").value = "";
         document.getElementById("autocomplete-input-profile-b").value = "";
         console.log(document.getElementById("autocomplete-input-profile-a").value);
         console.log(document.getElementById("autocomplete-input-profile-b").value);
+
+        if (this.spCircle) this.spCircle.remove();
 
         // this.setState({
         //     selectedProfileA: 0,
@@ -768,6 +609,24 @@ class RandomSN extends Component {
 
         // console.log(this.state.selectedProfileA);
         // console.log(this.state.selectedProfileB);
+    }
+    clearSelection = e => {
+        if (this.state.graphAppended) {
+            var that = this;
+            that.node.style('stroke-opacity', 1)
+                .attr('fill-opacity', 1);
+            that.link.style('stroke-opacity', 1)
+                .style('stroke', color("#6B6B6B"));
+            that.circle.style("fill", (d) => that.c10(d.zone - 2))
+                .attr("r", (d) => (d.influence/2 > 7 ? d.influence/2 : 7));
+            that.profileImage.style('opacity', () => that.state.profilePicsDisplayed ? 1:0)
+                .attr('x', -15)
+                .attr('y', -15)
+                .attr('height', 30)
+                .attr('width', 30);
+            that.profileName.attr("y", -20)
+                .style('opacity', () => that.state.profileNamesDisplayed ? 1:0);
+        }
     }
 
     render() {
@@ -899,30 +758,46 @@ class RandomSN extends Component {
                             </div>
                         </ul>
                         <div className="section">
-                                <div style={{display: 'inline-flex', verticalAlign: 'middle', alignContent: 'center'}}>
-                                    <a href="#" data-target="slide-out" className="sidenav-trigger">
-                                        <i className="material-icons small teal-text">menu</i>
-                                    </a>
-                                    &nbsp;
-                                    <span> &#8592; Start Here</span>
-                                </div>
+                            <div style={{display: 'inline-flex', verticalAlign: 'middle', alignContent: 'center'}}>
+                                <a href="#" data-target="slide-out" className="sidenav-trigger">
+                                    <i className="material-icons small teal-text">menu</i>
+                                </a>
+                                &nbsp;
+                                <span> &#8592; Start Here</span>
+                            </div>
                         </div>
                     </div>
                 </aside>
                 <div className="row">
                     <div className="col s12 m12 l12">
-                        {/* <div className="divider"></div> */}
-                        {/* <div className="section"> */}
-                            <div className="row">
-                                <div className="black col s12 m7 l8" id="svg-container" align="center"></div>
-                                <div className="black col s12 m5 l4" align="center">
-                                    <span>About this profile</span>
-                                    <div id="tooltip-container">
+                        <div className="row">
+                            <div className="black col s12 m12 l12" align="center">
+                                <div className="row">
+                                    <div className="col s12 m4 l4">
+                                        <div id="clear-selection-btn-container">
+                                            <button className="waves-effect waves-light teal darken-2 white-text btn left"
+                                                onClick={this.clearSelection}>
+                                                    Unselect
+                                            </button>
+                                            {/* <input name="clearButton"
+                                                    type="button"
+                                                    value="clear selection"
+                                                    onClick={this.clearSelection}
+                                                    className="waves-effect waves-light teal darken-2 white-text btn right" /> */}
+                                        </div>
                                     </div>
+                                    <div id="tooltip-above-graph-container" className="col s12 m8 l8"></div>
                                 </div>
-                                    {/* <div id={'#' + this.props.id}></div> */}
+                                
+                                <div id="svg-container"></div>
                             </div>
-                        {/* </div> */}
+                            {/* <div id={'#' + this.props.id}></div> */}
+                        </div>
+                        <div>
+                            <span>About this profile</span>
+                            <div id="tooltip-container" className="">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
