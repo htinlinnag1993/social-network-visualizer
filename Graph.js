@@ -21,19 +21,19 @@ class Graph {
            console.log("Profile " + i + " has " + this.AdjList.get(i).length + " friends");
         }
     }
-    getGraphInAdjustListAsObj() {
+    getAdjustListAsObj() {
         var obj = {};
         this.AdjList.forEach(function(value, key) {
             obj[key] = value;
         });
         return obj;
     }
-    getGraphAdjustList(graphInAdjList) {
-        var obj = {};
-        graphInAdjList.forEach(function(value, key) {
-            obj[key] = value;
-        });
-        return obj;
+    setAdjustListMap(graphInAdjList) {
+        var temp = new Map();
+        for (var i=101; i< 101 + this.noOfVertices; i++) {
+            temp.set(i, graphInAdjList[i]);
+        }
+        this.AdjList = temp;
     }
     getSPBtwn2Vs(srcId, destId, startingId) {
         var visited = Array(this.noOfVertices).fill(false);
@@ -75,7 +75,7 @@ class Graph {
         this.pred = Array(this.noOfVertices).fill(-1);
         if (this.getSPBtwn2Vs(srcId, destId, startingId) === false) {  
             console.log("Given source and destination are not connected"); 
-            return; 
+            return 0; 
         } 
         // path stores the shortest path 
         var path = [];
@@ -96,11 +96,12 @@ class Graph {
         for (var i = path.length - 1; i >= 0; i--) 
             console.log( path[i] + " -> ");
 
+        path = path.reverse();
         return {
             shortestDistance: this.dist[dest],
             shortestPath: path
         };
-    } 
+    }
 
     bfs(srcId, startingId) {
         var visited = Array(this.noOfVertices).fill(false);

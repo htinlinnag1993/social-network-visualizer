@@ -75,7 +75,7 @@ class Graph {
         this.pred = Array(this.noOfVertices).fill(-1);
         if (this.getSPBtwn2Vs(srcId, destId, startingId) === false) {  
             console.log("Given source and destination are not connected"); 
-            return; 
+            return 0; 
         } 
         // path stores the shortest path 
         var path = [];

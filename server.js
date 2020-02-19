@@ -1,12 +1,19 @@
-
 const express = require('express');
+const bodyParser = require('body-parser');
+const url =  require('url');
+const querystring = require('querystring');
 const fs = require('fs');
 const RPG = require('./RandomProfilesGenerator');
 
 const app = express(); 
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
-app.get('/api/generate/random-profiles-and-connections', function(req, res) {
-    const rpg = new RPG();
+app.get('/api/generate/random-profiles-and-connections(/*)?', function(req, res) {
+
+    var numberOfProfiles = Number(req.query.numofprofiles);
+
+    const rpg = new RPG(numberOfProfiles, 101);
     // res.json(rpg.getNodesAndLinks());
 
     fs.writeFileSync('test-data.json', JSON.stringify(rpg.getNodesAndLinks()));

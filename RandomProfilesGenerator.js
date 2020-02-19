@@ -118,19 +118,21 @@ class RandomProfilesGenerator {
     // In d3 forceSimulation, source and target are the actual indices of the nodes instead of the ids
     generateConnections() {
         const min = 0, max = min - 1 + this.numberOfProfiles;
-        const maxNumOfFriends = (max-1)/5;
+        var ratio = (this.numberOfProfiles > 10) ? (this.numberOfProfiles / 10) : 1;
+        ratio = Math.floor(ratio);
+        const maxNumOfFriends = (max-1)/ratio;  // (max-1)/5 for numberOfProfiles = 50
+        console.log("maxNumOfFriends: " + maxNumOfFriends);
 
         // During generating the random links between people, each profile's numberOfFriends is not the finalized number yet
         // as this is an undirected graph with adding edge data into both source's adjacency list and destination's adjacency list.
         // Therefore, each profile's number of friends will be finalized only at the end of the generation process.
         // In order to know that number, we can see this.graphInAdjList.get(vertex).length.
-        var numberOfFriends = this.getRandomNumInclusive(min, maxNumOfFriends); // numberOfFriends must be 1 less than numberOfProfiles
 
         // Iterate for every profile in the network
         for (var i=0; i<this.numberOfProfiles; i++) {
             var source = i,
                 sourceId = this.startingId + i;
-            numberOfFriends = this.getRandomNumInclusive(min, maxNumOfFriends); // numberOfFriends must be 1 less than numberOfProfiles
+            var numberOfFriends = this.getRandomNumInclusive(min, maxNumOfFriends); // numberOfFriends must be 1 less than numberOfProfiles
             console.log(i + "-->" + numberOfFriends);
 
             this.getMFYShuffledRConnection(source, sourceId, numberOfFriends);
@@ -150,22 +152,22 @@ class RandomProfilesGenerator {
         this.graphInAdjList.getNumOfEdgesForEachV();
         console.log("-------------------------------------");
 
-        console.log("---BFS from vertex 4 (105, numOfFriends= " + this.graphInAdjList.getCurrentVAdjList(105).length + ")---");
-        this.graphInAdjList.bfs(105, this.startingId);
+        // console.log("---BFS from vertex 4 (105, numOfFriends= " + this.graphInAdjList.getCurrentVAdjList(105).length + ")---");
+        // this.graphInAdjList.bfs(105, this.startingId);
     }
     getNodesAndLinks() {
         this.generateRandomProfiles();
         this.generateConnections();
-        var graphInAdjListObj = this.graphInAdjList.getGraphInAdjustListAsObj();
+        var graphInAdjListObj = this.graphInAdjList.getAdjustListAsObj();
         const nodesAndLinks = {
             nodes: this.profilesList,
             links: this.connectionsList,
             graphInAdjList: graphInAdjListObj
         };
 
-        var src = 101,
-            dest = 150;
-        this.graphInAdjList.printShortestDistance(src, dest, 101);
+        // var src = 101,
+        //     dest = 150;
+        // this.graphInAdjList.printShortestDistance(src, dest, 101);
             
         return nodesAndLinks;
         // return JSON.stringify(nodesAndLinks);

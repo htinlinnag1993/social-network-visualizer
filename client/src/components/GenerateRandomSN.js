@@ -13,10 +13,7 @@ class GenerateRandomSN extends Component {
     render() {
         return (
             <div>
-                <h4>Social Network Visualizer</h4>
-                <div>
-                    <RandomSN />
-                </div>
+                <RandomSN />
             </div>
         );
     }
