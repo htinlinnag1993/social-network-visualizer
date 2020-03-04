@@ -12,8 +12,10 @@ class GenerateRandomSN extends Component {
 
     render() {
         return (
-            <div>
-                <RandomSN />
+            <div className="container black white-text text-white">
+                <div>
+                    <RandomSN />
+                </div>
             </div>
         );
     }

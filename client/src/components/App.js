@@ -7,6 +7,7 @@ import { fab, faGithub } from '@fortawesome/free-brands-svg-icons';
 import { faCheckSquare, faCoffee } from '@fortawesome/free-solid-svg-icons';
 
 import Header from './Header';
+import Landing from './Landing';
 import GenerateRandomSN from './GenerateRandomSN';
 import SocialNetworkGraph from './SocialNetworkGraph';
 import Footer from './Footer';
@@ -14,7 +15,6 @@ import Footer from './Footer';
 library.add(fab, faGithub, faCheckSquare, faCoffee);
 
 const Dashboard = () => <h3>Dashboard</h3>
-const Landing = () => <h3>Landing</h3>
 
 class App extends Component {
   componentDidMount() {
@@ -28,12 +28,10 @@ class App extends Component {
           <div style={{display: "flex", minHeight: "100vh", flexDirection: "column"}}>
               <Header />
               <main style={{flex: "1 0 auto"}}>
-                <div className="container black white-text text-white">
-                  <Route exact path="/" component={Landing} />
-                  <Route exact path="/dashboard" component={Dashboard} />
-                  <Route exact path="/demo" component={GenerateRandomSN} />
-                  <Route exact path="/test" component={SocialNetworkGraph} />
-                </div>
+                <Route exact path="/" component={Landing} />
+                <Route exact path="/dashboard" component={Dashboard} />
+                <Route exact path="/demo" component={GenerateRandomSN} />
+                {/* <Route exact path="/test" component={SocialNetworkGraph} /> */}
               </main>
               <Footer />
           </div>
