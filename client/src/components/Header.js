@@ -18,7 +18,7 @@ class Header extends Component {
                                         <a href="/demo">Try It</a>
                                     </li>
                                     <li>
-                                        <a href="/">Login With Google</a>
+                                        <a href="/">Sign in with Google</a>
                                     </li>
                                 </ul>
                             </div>
