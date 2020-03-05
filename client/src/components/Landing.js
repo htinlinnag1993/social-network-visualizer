@@ -53,7 +53,7 @@ class Landing extends Component {
                                 Social networks are so big & complex that it is very difficult to know who is connected to who. 
                                 <br /><br />
                                 Whether you are watching a TV series that has tons of characters, drawing a company's internal structure, analyzing users,
-                                or fighting crimes, there is no easy-to-use accessible visualization tool to use for mapping out networks & keeping track of connections. 
+                                or fighting crimes, there is no easy-to-use & accessible visualization tool to use for mapping out networks & keeping track of connections. 
                                 <br /><br />
                                 SNV provides that missing tool.
                             </p>
@@ -109,22 +109,22 @@ class Landing extends Component {
                                     <img className="white" src="/resources/images/noun_social network_1151373_By_Guilhem_FR.png" style={{ borderRadius: "50%", marginTop: "35px" }} />
                                     <p className="white-text flow-text">Interactive Graph</p>
                                     <p className="teal-text darken-2 flow-text">
-                                        Interactive graph with clickable/draggable profiles & links. 
+                                        Interactive graph with clickable/draggable profiles & links 
                                     </p>
                                 </div>
                                 <div className="col s12 m4 l4 center">
                                     <img className="white" src="/resources/images/noun_Adjustment Settings_1452071_Berkah Icon_ID.png" style={{ borderRadius: "50%", marginTop: "35px" }} />
                                     <p className="white-text flow-text">Adjustable Display</p>
                                     <p className="teal-text darken-2 flow-text">
-                                        Graph has adjustable setting & display to toggle profile pics & names.
-                                        Demo version has a random data generator. 
+                                        Graph with adjustable setting & display to toggle profile pics & names.
+                                        Demo version has random data generator
                                     </p>
                                 </div>
                                 <div className="col s12 m4 l4 center">
                                     <img className="white" src="/resources/images/noun_Location_961270_By_Drishya.png" style={{ borderRadius: "50%", marginTop: "35px" }} />
                                     <p className="white-text flow-text">Connection Finder</p>
                                     <p className="teal-text darken-2 flow-text">
-                                        Find a path with connection(s) from profile A to profile B
+                                        Find a shortest path with connection(s) from profile A to profile B
                                     </p>
                                 </div>
                             </div>
@@ -152,14 +152,14 @@ class Landing extends Component {
                                     <img className="white" src="/resources/images/noun_Network_317687_By_Robin Richards_GB.png" style={{ borderRadius: "50%", marginTop: "35px" }} />
                                     <p className="white-text flow-text">Customizable Graphs</p>
                                     <p className="teal-text darken-2 flow-text">
-                                        Registered users will be able to creat their own graphs with their own data & save them 
+                                        Registered users will be able to create their own graphs with data & save them 
                                     </p>
                                 </div>
                                 <div className="col s12 m4 l4 center">
                                     <img className="white" src="/resources/images/noun_Demographic Data_2301706_HAlbertoGongora_CO.png" style={{ borderRadius: "50%", marginTop: "35px" }} />
                                     <p className="white-text flow-text">Demographics</p>
                                     <p className="teal-text darken-2 flow-text">
-                                        Visualization of profiles within the graphs for studying the demographics.
+                                        Visualization of profiles within the graphs for analyzing the demographics.
                                     </p>
                                 </div>
                             </div>

@@ -4,6 +4,8 @@ const url =  require('url');
 const querystring = require('querystring');
 const fs = require('fs');
 const RPG = require('./RandomProfilesGenerator');
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 const app = express(); 
 app.use(bodyParser.urlencoded({ extended: false }));
