@@ -10,7 +10,7 @@ class Footer extends Component {
                         © 2020 Copyright SNV
                     </div>
                     <div className="col s12 m8 l3">
-                        <a className="grey-text text-lighten-4 right" href="#!">
+                        <a className="grey-text text-lighten-4 right" href="https://github.com/htinlinnag1993/social-network-visualizer">
                             <FontAwesomeIcon icon={['fab', 'github']} size="lg" />
                             &nbsp; htinlinnag1993@gmail.com
                         </a>
