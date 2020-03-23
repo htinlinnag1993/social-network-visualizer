@@ -96,10 +96,20 @@ class RandomSN extends Component {
     showNumProfiles = () => {
         var slider = document.getElementById("num-profiles-range-slider");
         var output = document.getElementById("num-profiles");
+        var incrementNumProfiles = document.getElementById("increment-num-profiles");
+        var decrementNumProfiles = document.getElementById("decrement-num-profiles");
+        incrementNumProfiles.onclick = () => {
+            slider.value++;
+            output.innerHTML = slider.value;
+        };
+        decrementNumProfiles.onclick = () => {
+            slider.value--;
+            output.innerHTML = slider.value;
+        };
         output.innerHTML = slider.value;
-        slider.oninput = function() {
-            output.innerHTML = this.value;
-        }
+        slider.oninput = () => {
+            output.innerHTML = slider.value;
+        };
     }
     drawSVG = () => {
         this.svgContainer = d3.select("#svg-container");
@@ -888,19 +898,31 @@ class RandomSN extends Component {
                                             <div className="card-action">
                                                 <div className="row">
                                                     <div className="col s12 m12 l12 center">
-                                                        <p><span id="num-profiles"></span> Profiles</p>
-                                                        <p className="slidecontainer">
-                                                            <input type="range" id="num-profiles-range-slider"
-                                                                min="5" max="50" defaultValue={this.state.numberOfProfiles} />
-                                                        </p>
                                                         <div className="row">
-                                                            <div className="col s12 m12 l12 center">
+                                                            <div className="col s12 m12 l12">
+                                                                <p className="center"><span id="num-profiles"></span> Profiles</p>
+                                                            </div>
+                                                            <div className="col s12 m12 l12">
+                                                                <div className="row">
+                                                                    <div className="col s12 m12 l12">
+                                                                        <span id="decrement-num-profiles" className="waves-effect waves-light teal darken-2 btn left">&#60;</span>
+                                                                        <span id="increment-num-profiles" className="waves-effect waves-light teal darken-2 btn right">&#62;</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col s12 m12 l12">
+                                                                <p className="slidecontainer" style={{margin: 0}}>
+                                                                    <input type="range" id="num-profiles-range-slider"
+                                                                        min="5" max="50" defaultValue={this.state.numberOfProfiles} />
+                                                                </p>
+                                                            </div>
+                                                            <div className="col s12 m12 l12">
                                                                 <button onClick={this.showGraph}
                                                                         className="waves-effect waves-light teal darken-2 btn"
                                                                         id="random-sn-generator">
                                                                     Generate
                                                                 </button>
-                                                            </div> 
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -913,36 +935,44 @@ class RandomSN extends Component {
                                                 Names & Pics
                                             </div>
                                             <div className="card-action">
-                                                <div className="switch">
-                                                    <label htmlFor="profile_pics_toggle">
-                                                        <div className="valign-wrapper">
-                                                            <i className="small material-icons prefix">account_box</i>
-                                                            <input id="profile_pics_toggle" type="checkbox" 
-                                                                onChange={this.displayProfilePics}
-                                                                checked={this.state.profilePicsDisplayed} />
-                                                            <span className="lever"></span>
-                                                        </div>
-                                                    </label>
-                                                </div>
-                                                <div className="switch">
-                                                    <label htmlFor="profile_names_toggle">
-                                                        <div className="valign-wrapper">
-                                                            <i className="small material-icons prefix">font_download</i>
-                                                            <input id="profile_names_toggle" type="checkbox" 
-                                                                onChange={this.displayProfileNames}
-                                                                checked={this.state.profileNamesDisplayed} />
-                                                            <span className="lever"></span>
-                                                        </div>
-                                                    </label> 
-                                                </div>
-                                                <br />
                                                 <div className="row">
                                                     <div className="col s12 m12 l12 center">
-                                                        <button onClick={this.resetProfileNamesPicsSetting}
-                                                                className="waves-effect waves-light teal darken-2 btn"
-                                                                id="reset_profile_names_pics_setting">
-                                                            Reset
-                                                        </button>
+                                                        <div className="row">
+                                                            <div className="col s12 m12 l12">
+                                                                <div className="switch">
+                                                                    <label htmlFor="profile_pics_toggle">
+                                                                        <div className="valign-wrapper" style={{margin:10}}>
+                                                                            <i className="small material-icons prefix left">account_box</i>
+                                                                            <input id="profile_pics_toggle" type="checkbox" 
+                                                                                onChange={this.displayProfilePics}
+                                                                                checked={this.state.profilePicsDisplayed} />
+                                                                            <span className="lever right"></span>
+                                                                        </div>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <div className="col s12 m12 l12">
+                                                                <div className="switch">
+                                                                    <label htmlFor="profile_names_toggle">
+                                                                        <div className="valign-wrapper" style={{margin:10}}>
+                                                                            <i className="small material-icons prefix left">font_download</i>
+                                                                            <input id="profile_names_toggle" type="checkbox" 
+                                                                                onChange={this.displayProfileNames}
+                                                                                checked={this.state.profileNamesDisplayed} />
+                                                                            <span className="lever right"></span>
+                                                                        </div>
+                                                                    </label> 
+                                                                </div>
+                                                            </div>
+                                                            <br/>
+                                                            <div className="col s12 m12 l12" style={{marginTop: 5}}>
+                                                                <button onClick={this.resetProfileNamesPicsSetting}
+                                                                        className="waves-effect waves-light teal darken-2 btn"
+                                                                        id="reset_profile_names_pics_setting">
+                                                                    Reset
+                                                                </button>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
