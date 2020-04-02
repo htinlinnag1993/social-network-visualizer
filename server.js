@@ -8,6 +8,8 @@ const mongoose = require('mongoose');
 const keys = require('./config/keys');
 const cookieSession = require('cookie-session');
 const passport = require('passport');
+const expressip = require('express-ip');
+const path = require('path');
 
 require('./models/User');
 require('./services/passport');
@@ -26,9 +28,11 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(expressip().getIpInfoMiddleware);
 
 require('./routes/authRoutes')(app);
 require('./routes/randomProfilesConnectionsRoutes')(app, RPG, fs);
+require('./routes/clientIPRoutes')(app);
 
 if (process.env.NODE_ENV === 'production') {
     // Express will serve up production assets like our main.js file, main.css file
