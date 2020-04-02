@@ -4,13 +4,12 @@ import axios from 'axios';
 import { color, svg } from 'd3';
 import M from 'materialize-css/dist/js/materialize.min.js';
 import Graph from '../Graph';
+import ControlsMenu from './ControlsMenu/ControlsMenu';
 
 class RandomSN extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            numberOfProfiles: 50,
-            randomProfilesAndConnections: {},
             margin: {
                 top: 20,
                 bottom: 50,
@@ -19,6 +18,13 @@ class RandomSN extends Component {
             },
             width: 800, // before --> 960
             height: 800, // before --> 700
+            numberOfProfiles: 50,
+
+
+
+            randomProfilesAndConnections: {},
+            
+            
             nodes: [],
             links: [],
             graphAppended: false,
@@ -62,24 +68,33 @@ class RandomSN extends Component {
             height: 800 - this.state.margin.top - this.state.margin.bottom, // before --> 700
         });
         M.AutoInit();   // Initialize with empty options
+
         // Initialize Tooltip for help guide of the app
         this.helpGuide = document.querySelector('#help-guide');
         M.Tooltip.init();
         // document.querySelectorAll('.material-tooltip .backdrop').style = {
         //     textAlign: "left"
         // };
-        // Initialize the profile search bars with autocomplete feature but with empty data
-        this.profileSearchBars = document.querySelectorAll('.autocomplete');
-        M.Autocomplete.init(this.profileSearchBars, );
-        // Initialize the range slider for choosing the number of profiles 
-        var array_of_dom_elements = document.querySelectorAll("input[type=range]");
-        M.Range.init(array_of_dom_elements);
+
+
+        // // Initialize the profile search bars with autocomplete feature but with empty data
+        // this.profileSearchBars = document.querySelectorAll('.autocomplete');
+        // M.Autocomplete.init(this.profileSearchBars, );
+
+
+        // // Initialize the range slider for choosing the number of profiles 
+        // var array_of_dom_elements = document.querySelectorAll("input[type=range]");
+        // M.Range.init(array_of_dom_elements);
+        
+        
         // Draw the svg image with its border
         this.drawSVG();
         // Draw the place holder for SP Direction Map
         this.drawPlaceHolderSPDir();
-        // Add display for selected number of profiles using the selected value from range slider
-        this.showNumProfiles();
+        
+        
+        // // Add display for selected number of profiles using the selected value from range slider
+        // this.showNumProfiles();
     }
     addHelpGuideData = () => {
         var string =    "<p>This web app is a demo version of our SNV app." + "<br/>" +
@@ -93,24 +108,7 @@ class RandomSN extends Component {
                         "7. If there is a path between A & B, the path will be presented at the top of the graph.";
         return string;
     }
-    showNumProfiles = () => {
-        var slider = document.getElementById("num-profiles-range-slider");
-        var output = document.getElementById("num-profiles");
-        var incrementNumProfiles = document.getElementById("increment-num-profiles");
-        var decrementNumProfiles = document.getElementById("decrement-num-profiles");
-        incrementNumProfiles.onclick = () => {
-            slider.value++;
-            output.innerHTML = slider.value;
-        };
-        decrementNumProfiles.onclick = () => {
-            slider.value--;
-            output.innerHTML = slider.value;
-        };
-        output.innerHTML = slider.value;
-        slider.oninput = () => {
-            output.innerHTML = slider.value;
-        };
-    }
+    
     drawSVG = () => {
         this.svgContainer = d3.select("#svg-container");
         // Create an SVG element and append it to the DOM
@@ -134,9 +132,9 @@ class RandomSN extends Component {
                                 .style("fill", "none")
                                 .style("stroke-width", 1);
     }
-    showGraph = async () => {
-        // Get the number of profiles from the range slider and set the state
-        var num = Number(document.getElementById("num-profiles-range-slider").value);
+    
+    // showGraph = async () => {
+    setNumOfProfilesNShowGraph = async (num) => {
         this.setState({
             numberOfProfiles: num
         });
@@ -399,6 +397,8 @@ class RandomSN extends Component {
             graphAppended: true
         });
 
+
+
         // For populating data for autocomplete search bar
         that.profileSearchBarA = document.querySelector("#autocomplete-input-profile-a");
         that.profileSearchBarB = document.querySelector("#autocomplete-input-profile-b");
@@ -425,6 +425,9 @@ class RandomSN extends Component {
                 that.handleProfileBChange(val);
             }
         });
+
+
+
     }
 
     isConnected = (a, b) => {
@@ -869,9 +872,14 @@ class RandomSN extends Component {
         }
     }
 
+
+
+
     render() {
+        const { numberOfProfiles, profilePicsDisplayed, profileNamesDisplayed } = this.state;
+
         return (
-            <div>
+            <div className="container black white-text text-white">
                 <div className="row">
                     <div className="col s12 m12 l12">
                         <h4>Social Network Visualizer &nbsp;
@@ -886,208 +894,64 @@ class RandomSN extends Component {
                 </div>
                 <div>
                     <div className="divider"></div>
-                    <aside>
-                        <div>
-                            <ul id="slide-out" className="sidenav black" style={{top: '68px', height: '90%'}}>
-                                <div className="container">
-                                    <li>
-                                        <div className="card black">
-                                            <div className="card-title">
-                                                Random Data
-                                            </div>
-                                            <div className="card-action">
-                                                <div className="row">
-                                                    <div className="col s12 m12 l12 center">
-                                                        <div className="row">
-                                                            <div className="col s12 m12 l12">
-                                                                <p className="center"><span id="num-profiles"></span> Profiles</p>
-                                                            </div>
-                                                            <div className="col s12 m12 l12">
-                                                                <div className="row">
-                                                                    <div className="col s12 m12 l12">
-                                                                        <span id="decrement-num-profiles" className="waves-effect waves-light teal darken-2 btn left">&#60;</span>
-                                                                        <span id="increment-num-profiles" className="waves-effect waves-light teal darken-2 btn right">&#62;</span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col s12 m12 l12">
-                                                                <p className="slidecontainer" style={{margin: 0}}>
-                                                                    <input type="range" id="num-profiles-range-slider"
-                                                                        min="5" max="50" defaultValue={this.state.numberOfProfiles} />
-                                                                </p>
-                                                            </div>
-                                                            <div className="col s12 m12 l12">
-                                                                <button onClick={this.showGraph}
-                                                                        className="waves-effect waves-light teal darken-2 btn"
-                                                                        id="random-sn-generator">
-                                                                    Generate
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                    <ControlsMenu 
+                        numberOfProfiles={numberOfProfiles} setNumOfProfilesNShowGraph={this.setNumOfProfilesNShowGraph}
+                        profilePicsDisplayed={profilePicsDisplayed} displayProfilePics={this.displayProfilePics}
+                        profileNamesDisplayed={profileNamesDisplayed} displayProfileNames={this.displayProfileNames}
+                        resetProfileNamesPicsSetting={this.resetProfileNamesPicsSetting}
+                        resetProfileSearch={this.resetProfileSearch} 
+                        findSPFromAtoB={this.findSPFromAtoB} 
+                        resetFromAtoB={this.resetFromAtoB} />
+
+
+
+
+                    
+
+
+
+                    <div className="section">
+                        <div className="row" style={{marginBottom: "0px"}}>
+                            <div className="col s12 m3 l3">
+                                <div className="row">
+                                    <div className="col s9 m10 l9">
+                                        <div style={{display: 'inline-flex', verticalAlign: 'middle', alignContent: 'center'}}>
+                                            <a href="#" data-target="slide-out" className="sidenav-trigger">
+                                                <i className="material-icons small teal-text">menu</i>
+                                            </a>
+                                            &nbsp;
+                                            <span> &#8592; Start Here</span>
                                         </div>
-                                    </li>
-                                    <li>
-                                        <div className="card black">
-                                            <div className="card-title">
-                                                Names & Pics
-                                            </div>
-                                            <div className="card-action">
-                                                <div className="row">
-                                                    <div className="col s12 m12 l12 center">
-                                                        <div className="row">
-                                                            <div className="col s12 m12 l12">
-                                                                <div className="switch">
-                                                                    <label htmlFor="profile_pics_toggle">
-                                                                        <div className="valign-wrapper" style={{margin:10}}>
-                                                                            <i className="small material-icons prefix left">account_box</i>
-                                                                            <input id="profile_pics_toggle" type="checkbox" 
-                                                                                onChange={this.displayProfilePics}
-                                                                                checked={this.state.profilePicsDisplayed} />
-                                                                            <span className="lever right"></span>
-                                                                        </div>
-                                                                    </label>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col s12 m12 l12">
-                                                                <div className="switch">
-                                                                    <label htmlFor="profile_names_toggle">
-                                                                        <div className="valign-wrapper" style={{margin:10}}>
-                                                                            <i className="small material-icons prefix left">font_download</i>
-                                                                            <input id="profile_names_toggle" type="checkbox" 
-                                                                                onChange={this.displayProfileNames}
-                                                                                checked={this.state.profileNamesDisplayed} />
-                                                                            <span className="lever right"></span>
-                                                                        </div>
-                                                                    </label> 
-                                                                </div>
-                                                            </div>
-                                                            <br/>
-                                                            <div className="col s12 m12 l12" style={{marginTop: 5}}>
-                                                                <button onClick={this.resetProfileNamesPicsSetting}
-                                                                        className="waves-effect waves-light teal darken-2 btn"
-                                                                        id="reset_profile_names_pics_setting">
-                                                                    Reset
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div className="card black">
-                                            <div className="card-title">
-                                                From A to B
-                                            </div>
-                                            <div className="card-action">
-                                                <div className="row" style={{marginBottom: "0px"}}>
-                                                    <form>
-                                                        <div className="input-field col s10 m10 l10 white">
-                                                            <input type="text" id="autocomplete-input-profile-a" className="autocomplete" />
-                                                            <label htmlFor="autocomplete-input-profile-a">Search for A</label>
-                                                        </div>
-                                                        <div className="col s2 m2 l2">
-                                                            <button className="waves-effect waves-light teal darken-2 btn" onClick={this.resetProfileSearch} type="reset"
-                                                                style={{
-                                                                    width: "20px",
-                                                                    height: "53px",
-                                                                    marginTop: "1rem",
-                                                                    marginBottom: "1rem",
-                                                                    textAlign: "center",
-                                                                    padding: "2px"
-                                                                }}>x</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                                <div className="row" style={{marginBottom: "0px"}}>
-                                                    <form>
-                                                        <div className="input-field col s10 m10 l10 white">
-                                                            <input type="text" id="autocomplete-input-profile-b" className="autocomplete" />
-                                                            <label htmlFor="autocomplete-input-profile-b">Search for B</label>
-                                                        </div>
-                                                        <div className="col s2 m2 l2">
-                                                            <button className="waves-effect waves-light teal darken-2 btn" onClick={this.resetProfileSearch} type="reset"
-                                                                style={{
-                                                                    width: "20px",
-                                                                    height: "53px",
-                                                                    marginTop: "1rem",
-                                                                    marginBottom: "1rem",
-                                                                    textAlign: "center",
-                                                                    padding: "2px"
-                                                                }}>x</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                                <div className="row">
-                                                    <div className="col s5 m5 l6" style={{padding: "0 0"}}>
-                                                        <button onClick={this.findSPFromAtoB}
-                                                                className="waves-effect waves-light teal darken-2 btn left"
-                                                                id="findsp_fromAtoB">
-                                                            Find
-                                                        </button>
-                                                    </div>
-                                                    <div className="col s7 m7 l6">
-                                                        <button onClick={this.resetFromAtoB}
-                                                                className="waves-effect waves-light teal darken-2 btn left"
-                                                                id="reset_fromAtoB_setting">
-                                                            Reset
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
+                                    </div>
                                 </div>
-                            </ul>
-                            <div className="section">
-                                <div className="row" style={{marginBottom: "0px"}}>
-                                    <div className="col s12 m3 l3">
-                                        <div className="row">
-                                            <div className="col s9 m10 l9">
-                                                <div style={{display: 'inline-flex', verticalAlign: 'middle', alignContent: 'center'}}>
-                                                    <a href="#" data-target="slide-out" className="sidenav-trigger">
-                                                        <i className="material-icons small teal-text">menu</i>
-                                                    </a>
-                                                    &nbsp;
-                                                    <span> &#8592; Start Here</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="row">
-                                            <div className="col s9 m10 l8 left">
-                                                <div id="clear-selection-btn-container">
-                                                    <button className="waves-effect waves-light teal darken-2 white-text btn left"
-                                                        onClick={this.clearSelection}>
-                                                            Unselect
-                                                    </button>
-                                                    {/* <input name="clearButton"
-                                                            type="button"
-                                                            value="clear selection"
-                                                            onClick={this.clearSelection}
-                                                            className="waves-effect waves-light teal darken-2 white-text btn right" /> */}
-                                                </div>
-                                            </div>
-                                            
+                                <div className="row">
+                                    <div className="col s9 m10 l8 left">
+                                        <div id="clear-selection-btn-container">
+                                            <button className="waves-effect waves-light teal darken-2 white-text btn left"
+                                                onClick={this.clearSelection}>
+                                                    Unselect
+                                            </button>
+                                            {/* <input name="clearButton"
+                                                    type="button"
+                                                    value="clear selection"
+                                                    onClick={this.clearSelection}
+                                                    className="waves-effect waves-light teal darken-2 white-text btn right" /> */}
                                         </div>
                                     </div>
-                                    <div className="col s12 m9 l9">
-                                        <div id="sp-dir-svg-container"></div>
-                                    </div>
+                                    
                                 </div>
                             </div>
+                            <div className="col s12 m9 l9">
+                                <div id="sp-dir-svg-container"></div>
+                            </div>
                         </div>
-                    </aside>
+                    </div>
+
+
                     <div className="row">
                         <div className="col s12 m12 l12">
                             <div className="row">
                                 <div className="black col s12 m12 l12" align="center">
-                                    {/* <div className="row">
-                                        <div id="tooltip-above-graph-container" className="col s12 m8 l8"></div>
-                                    </div> */}
                                     <div id="svg-container"></div>
                                 </div>
                                 {/* <div id={'#' + this.props.id}></div> */}

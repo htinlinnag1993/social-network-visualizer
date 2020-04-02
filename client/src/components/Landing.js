@@ -21,8 +21,8 @@ class Landing extends Component {
                         </div>
                     </div>
                 </div>
-                <div class="parallax-container" style={{ height: "200px" }}>
-                    <div class="parallax" style={{ position: "static", opacity: "0.5"}}>
+                <div className="parallax-container" style={{ height: "200px" }}>
+                    <div className="parallax" style={{ position: "static", opacity: "0.5"}}>
                         <img src="/resources/images/depositphotos_71076955-stock-illustration-communication-social-banner-edited.jpg" />
                     </div>
                 </div>
@@ -60,8 +60,8 @@ class Landing extends Component {
                         </div>
                     </div>
                 </div>
-                <div class="parallax-container" style={{ height: "200px" }}>
-                    <div class="parallax" style={{ position: "static", opacity: "0.5" }}>
+                <div className="parallax-container" style={{ height: "200px" }}>
+                    <div className="parallax" style={{ position: "static", opacity: "0.5" }}>
                         <img src="/resources/images/ryoji-iwata-unsplash-edited.jpg"/>
                     </div>
                 </div>
@@ -95,8 +95,8 @@ class Landing extends Component {
                         </div>
                     </div>
                 </div>
-                <div class="parallax-container" style={{ height: "200px" }}>
-                    <div class="parallax" style={{ position: "static", opacity: "0.5"}}>
+                <div className="parallax-container" style={{ height: "200px" }}>
+                    <div className="parallax" style={{ position: "static", opacity: "0.5"}}>
                         <img src="/resources/images/alina-grubnyak-unsplash-edited.jpg" />
                     </div>
                 </div>
@@ -131,8 +131,8 @@ class Landing extends Component {
                         </div>
                     </div>
                 </div>
-                <div class="parallax-container" style={{ height: "200px" }}>
-                    <div class="parallax" style={{ position: "static", opacity: "0.7"}}>
+                <div className="parallax-container" style={{ height: "200px" }}>
+                    <div className="parallax" style={{ position: "static", opacity: "0.7"}}>
                         <img src="/resources/images/anastasia-dulgier-unsplash-edited.jpg" />
                     </div>
                 </div>
