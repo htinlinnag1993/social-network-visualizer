@@ -8,17 +8,19 @@ import { faCheckSquare, faCoffee } from '@fortawesome/free-solid-svg-icons';
 
 import Header from './Header';
 import Landing from './Landing';
-import GenerateRandomSN from './GenerateRandomSN';
+import Dashboard from './Dashboard';
+import RandomSN from './RandomSN';
 import SocialNetworkGraph from './SocialNetworkGraph';
 import Footer from './Footer';
 
 library.add(fab, faGithub, faCheckSquare, faCoffee);
 
-const Dashboard = () => <h3>Dashboard</h3>
+// const Dashboard = () => <h3>Dashboard</h3>
 
 class App extends Component {
   componentDidMount() {
-    this.props.fetchRandomSN();
+    this.props.fetchUser();
+    // this.props.fetchRandomSN();
   }
 
   render() {
@@ -30,7 +32,7 @@ class App extends Component {
               <main style={{flex: "1 0 auto"}}>
                 <Route exact path="/" component={Landing} />
                 <Route exact path="/dashboard" component={Dashboard} />
-                <Route exact path="/demo" component={GenerateRandomSN} />
+                <Route exact path="/demo" component={RandomSN} />
                 {/* <Route exact path="/test" component={SocialNetworkGraph} /> */}
               </main>
               <Footer />
