@@ -5,6 +5,7 @@ import { color, svg } from 'd3';
 import M from 'materialize-css/dist/js/materialize.min.js';
 import Graph from '../Graph';
 import ControlsMenu from './ControlsMenu/ControlsMenu';
+import DemoHelpGuide from './DemoHelpGuide';
 
 class RandomSN extends Component {
     constructor(props) {
@@ -17,14 +18,8 @@ class RandomSN extends Component {
                 left: 50
             },
             width: 800, // before --> 960
-            height: 800, // before --> 700
+            height: 700, // before --> 700
             numberOfProfiles: 50,
-
-
-
-            randomProfilesAndConnections: {},
-            
-            
             nodes: [],
             links: [],
             graphAppended: false,
@@ -34,9 +29,7 @@ class RandomSN extends Component {
             graphInAdjList: new Map(),
             selectedProfileA: 0,
             selectedProfileB: 0,
-            aNodeClicked: false,
-            overlaySideMenuShowed: true,
-            shorestPathBtwnAnB: []
+            aNodeClicked: false
             // id: root
         };
         this.displayProfileNames = this.displayProfileNames.bind(this);
@@ -44,10 +37,12 @@ class RandomSN extends Component {
         this.handleProfileAChange = this.handleProfileAChange.bind(this);
         this.handleProfileBChange = this.handleProfileBChange.bind(this);
 
+
+
+
         /** variables for d3 visualization */
-        var c10, tooltip, helpGuide,
+        var c10, tooltip, borderPath, 
             svgContainer, svgElement, 
-            // borderPath, 
             mainG, force, 
             link, spLink, node, spCircle, 
             // arrowHeads, edgepaths,
@@ -61,59 +56,27 @@ class RandomSN extends Component {
             spDirMainG, spDirforce, 
             spDirLinks, spDirNodes,
             spDirProfileNames, spDirProfileImages;
+    
+    
+    
+    
     }
     componentDidMount() {
         this.setState({
-            width: 800 - this.state.margin.left - this.state.margin.right, // before --> 960 -
-            height: 800 - this.state.margin.top - this.state.margin.bottom, // before --> 700
+            width: 800 - this.state.margin.left - this.state.margin.right,
+            height: 700 - this.state.margin.top - this.state.margin.bottom,
         });
         M.AutoInit();   // Initialize with empty options
-
-        // Initialize Tooltip for help guide of the app
-        this.helpGuide = document.querySelector('#help-guide');
-        M.Tooltip.init();
-        // document.querySelectorAll('.material-tooltip .backdrop').style = {
-        //     textAlign: "left"
-        // };
-
-
-        // // Initialize the profile search bars with autocomplete feature but with empty data
-        // this.profileSearchBars = document.querySelectorAll('.autocomplete');
-        // M.Autocomplete.init(this.profileSearchBars, );
-
-
-        // // Initialize the range slider for choosing the number of profiles 
-        // var array_of_dom_elements = document.querySelectorAll("input[type=range]");
-        // M.Range.init(array_of_dom_elements);
-        
-        
         // Draw the svg image with its border
         this.drawSVG();
         // Draw the place holder for SP Direction Map
         this.drawPlaceHolderSPDir();
-        
-        
-        // // Add display for selected number of profiles using the selected value from range slider
-        // this.showNumProfiles();
     }
-    addHelpGuideData = () => {
-        var string =    "<p>This web app is a demo version of our SNV app." + "<br/>" +
-                        "How to use it & Steps:</p>" + "<br/>" +
-                        "1. Click on the menu toggler next to 'Start Here'." + "<br/>" +
-                        "2. Choose the number of profiles to visualize & click on 'Generate'." + "<br/>" +
-                        "3. Click & drag around on anyone in the network to highlight him/her & his/her friends." + "<br/>" +
-                        "4. Click on 'Unselect' to stop highlighting." + "<br/>" +
-                        "5. You can toggle on/off profile pics & names or reset it back to default." + "<br/>" +
-                        "6. Search for profile A & B to find the shortest path between them." + "<br/>" +
-                        "7. If there is a path between A & B, the path will be presented at the top of the graph.";
-        return string;
-    }
-    
     drawSVG = () => {
         this.svgContainer = d3.select("#svg-container");
         // Create an SVG element and append it to the DOM
         this.svgElement = this.svgContainer.append("svg")
-                            .attr("viewBox", `0 0 800 800`) // before --> 960 and 700
+                            .attr("viewBox", `0 0 800 700`) // before --> 960 and 700
                             // .attr("width", 960)
                             // .attr("height", 700)
                             .attr("id", "rsnGraph")
@@ -126,14 +89,69 @@ class RandomSN extends Component {
         this.borderPath = this.svgElement.append("rect")
                                 .attr("x", 0)
                                 .attr("y", 0)
-                                .attr("height", 800)
                                 .attr("width", 800)
+                                .attr("height", 700)
                                 .style("stroke", "white")
                                 .style("fill", "none")
                                 .style("stroke-width", 1);
     }
-    
-    // showGraph = async () => {
+    drawPlaceHolderSPDir = () => {
+        var that = this;
+        // Select the spDirSVGContainer
+        this.spDirSVGContainer = d3.select("#sp-dir-svg-container");
+        //
+        that.spDirSVGElement = that.spDirSVGContainer.append("svg")
+                                .attr("viewBox", `0 0 400 100`)
+                                .attr("id", "sp-dir-placeholder")
+                                .attr("border", 1)
+                                .style("border-left", "solid white 1px")
+                                .style("background-color", "black");
+        //
+        var svgWidth = 400 - 20 - 20,
+            svgHeight = 100 - 10 - 10,
+            numNodes = 2,
+            xCoorIncrement = svgWidth/numNodes,
+            xStartingCoor = 20 + (xCoorIncrement/2),
+            yCoor = (svgHeight/3) * 2;
+        //
+        let nodes = [];
+        let nodeNames = ["Profile A", "Profile B"];
+        nodes.push([Number(xStartingCoor), Number(yCoor)]);
+        nodes.push([Number(xStartingCoor + xCoorIncrement), Number(yCoor)]);
+        //
+        that.spDirLinks = d3.linkHorizontal()({
+                                source: nodes[0],
+                                target: nodes[1]
+                            });
+        //
+        that.spDirSVGElement.append('path')
+            .attr('d', that.spDirLinks)
+            .attr('class', 'sp-dir-link')
+            .attr('stroke', 'teal')
+            .attr('fill', 'none')
+            .style("stroke-dasharray", ("3, 3"));
+        // Add a circle to each node
+        for (let i=0; i<nodes.length; i++) {
+            that.spDirSVGElement.append('circle')
+                .attr('class', 'sp-dir-node')
+                .attr('cx', nodes[i][0])
+                .attr('cy', nodes[i][1])
+                .attr('r', 10)
+                .style('fill', 'teal');
+            // Add a name label to each node
+            that.spDirSVGElement.append("text")
+                .attr("class", "sp-dir-profile-name")
+                .attr("x", nodes[i][0] - (((nodeNames[i].length-3)/2) * 6))
+                .attr("y", nodes[i][1] - 20)
+                .attr("font-size", 10)
+                .attr("fill", "white")
+                .text(nodeNames[i])
+                .style("opacity", 1);
+        }
+        d3.select("#sp-dir-svg-container").attr("align","center");
+    }
+
+    // Set the number of random profiles using the number from the range slider & show graph accordingly
     setNumOfProfilesNShowGraph = async (num) => {
         this.setState({
             numberOfProfiles: num
@@ -141,11 +159,10 @@ class RandomSN extends Component {
         // Get and set the external random data from api for the social network
         var url = '/api/generate/random-profiles-and-connections/' + '?numofprofiles=' + num;
         const res = await axios.get(url);
-        this.setState({ randomProfilesAndConnections: res.data });
         // Extract data from dataset & set the states
-        var nodes = this.state.randomProfilesAndConnections.nodes,
-            links = this.state.randomProfilesAndConnections.links,
-            graphInAdjList = this.state.randomProfilesAndConnections.graphInAdjList;
+        var nodes = res.data.nodes,
+            links = res.data.links,
+            graphInAdjList = res.data.graphInAdjList;
         this.setState({
             nodes: nodes,
             links: links,
@@ -153,7 +170,7 @@ class RandomSN extends Component {
         });
         // Draw the graph
         this.drawGraph(nodes, links);
-
+        
         console.log(nodes);
         console.log(links);
         console.log(graphInAdjList);
@@ -168,6 +185,8 @@ class RandomSN extends Component {
         this.graph = tempGraph;
         // console.log(this.graph.printShortestDistance(101, 150, 101));
     }
+
+    // Need to clean up the code in the following 3 methods(drawGraph, isConnected, fade) later
     drawGraph = (nodes, links) => {
         // To prevent appending more than one graph
         if (this.state.graphAppended) {
@@ -220,7 +239,7 @@ class RandomSN extends Component {
                         .force("collide",d3.forceCollide().radius(function(d) {return d.influence * 10;}))
                         // .iterations()).on("tick", ticked)
                         .force("charge", d3.forceManyBody())
-                        .force("center", d3.forceCenter( 800/2 - 50, 800/2 )) // before --> 960 and 700
+                        .force("center", d3.forceCenter( 800/2 - 50, 700/2 )) // before --> 960 and 700
                         .force("y", d3.forceY(this.state.height / 2).strength(0.05))
                         .force("x", d3.forceX(this.state.width / 2).strength(0.05));
         //Add links to SVG
@@ -328,8 +347,6 @@ class RandomSN extends Component {
                             //     that.tooltip.html("Click on the profile you want to view." +
                             //                         "<p/> Double-click to unselect.");
                             // })
-                            
-                            
         // Add a label to each node
         that.profileName = that.node.append("text")
                             // .attr("dx", 17)
@@ -383,27 +400,21 @@ class RandomSN extends Component {
             if (!d3.event.active) that.force.alphaTarget(0);
             d.fx = null;
             d.fy = null;
-        } 
-
-
+        }
         that.linkedByIndex = {};
         links.forEach(d => {
             that.linkedByIndex[`${d.source.index},${d.target.index}`] = 1;
         });
-
         d3.select("#svg-container").attr("align","center");
-
         this.setState({
             graphAppended: true
         });
-
-
-
         // For populating data for autocomplete search bar
         that.profileSearchBarA = document.querySelector("#autocomplete-input-profile-a");
         that.profileSearchBarB = document.querySelector("#autocomplete-input-profile-b");
         var nodesDataObject = {};
         that.nameToId = {};
+        // Does not mutate/update the state. Only iterating it to get data from
         this.state.nodes.forEach(function(element) {
             nodesDataObject[element.name] = element.avatar;
             that.nameToId[element.name] = element.id;
@@ -425,28 +436,12 @@ class RandomSN extends Component {
                 that.handleProfileBChange(val);
             }
         });
-
-
-
     }
-
     isConnected = (a, b) => {
         var that = this;
         return that.linkedByIndex[`${a.index},${b.index}`] || that.linkedByIndex[`${b.index},${a.index}`] || a.index === b.index;
     }
     fade = (opacity) => {
-        // console.log(this.state.aNodeClicked);
-        // if (opacity === 0) {
-        //     this.setState({
-        //         aNodeClicked: true
-        //     });
-        // }
-        // console.log(this.state.aNodeClicked);
-        // else {
-        //     this.setState({
-        //         aNodeClicked: false
-        //     });
-        // }
         return d => {
             console.log(this.state.aNodeClicked);
             if (opacity === 0) {
@@ -531,6 +526,9 @@ class RandomSN extends Component {
             }
         };
     }
+
+
+    // 3 methods for Profile Pics & Names Toggler
     displayProfilePics = e => {
         var that = this;    // To solve the scope problem between React and D3
         this.setState({
@@ -566,6 +564,8 @@ class RandomSN extends Component {
             that.profileImage.style("opacity", 1);
         }
     }
+
+    // 5 methods for From A to B finder
     handleProfileAChange = val => {
         console.log(val);
         console.log(this.nameToId[val]);
@@ -579,6 +579,33 @@ class RandomSN extends Component {
         this.setState({
             selectedProfileB: Number(this.nameToId[val])
         });
+    }
+    resetProfileSearch = () => {
+        if (this.spCircle) this.spCircle.remove();
+        // To prevent appending more than one graph & one tooltip
+        if (this.state.spDirGraphAppended) {
+            this.spDirSVGElement.remove();
+            this.setState({
+                spDirGraphAppended: false
+            });
+            this.drawPlaceHolderSPDir();
+        }
+    }
+    resetFromAtoB = e => {
+        document.getElementById("autocomplete-input-profile-a").value = "";
+        document.getElementById("autocomplete-input-profile-b").value = "";
+        console.log(document.getElementById("autocomplete-input-profile-a").value);
+        console.log(document.getElementById("autocomplete-input-profile-b").value);
+
+        if (this.spCircle) this.spCircle.remove();
+        // To prevent appending more than one graph & one tooltip
+        if (this.state.spDirGraphAppended) {
+            this.spDirSVGElement.remove();
+            this.setState({
+                spDirGraphAppended: false
+            });
+            this.drawPlaceHolderSPDir();
+        }
     }
     findSPFromAtoB = e => {
         if (this.state.graphAppended && this.state.selectedProfileA && this.state.selectedProfileB) {
@@ -630,6 +657,7 @@ class RandomSN extends Component {
                         count = 0;
 
                     arr.forEach((d) => {
+                        // Does not mutate the state. Only iterating it to get data from
                         this.state.nodes.forEach((o) => {
                             if (o.id === d) {
                                 var tempNode = o;
@@ -640,16 +668,6 @@ class RandomSN extends Component {
                             }
                         });
                     })
-
-                    // that.state.nodes.forEach((d) => {
-                    //     if (arr.includes(d.id)) {
-                    //         var tempNode = d;
-                    //         tempNode.xCoorInSPDir = xStartingCoor + (xCoorIncrement * count);
-                    //         count++;
-                    //         tempNode.yCoorInSPDir = yCoor;
-                    //         nodes4SPDirection.push(tempNode);
-                    //     }
-                    // });
                     that.state.links.forEach((d) => {
                         if(temp.includes(d.connectionId) || tempReverseEdges.includes(d.connectionId)) {
                             links4SPDirection.push(d);
@@ -657,25 +675,6 @@ class RandomSN extends Component {
                     });
 
                     this.drawSPDirection(nodes4SPDirection, links4SPDirection);
-
-                    // // that.link.style('opacity', (d) => temp.includes(d.connectionId) ? 1: 0)
-                    // //         .style('stroke', (d) =>  temp.includes(d.connectionId) ? color("#FF1500") : color("#FFFFFF"));
-                    // that.link.style('opacity', (d) => {
-                    //         if(temp.includes(d.connectionId) || tempReverseEdges.includes(d.connectionId)) {
-                    //             console.log(d.connectionId + " is drawn");
-                    //             return 1;
-                    //         } else {
-                    //             return 0;
-                    //         }
-                    //     })
-                        // .style('stroke', (d) =>  {
-                        //     if(temp.includes(d.connectionId) || tempReverseEdges.includes(d.connectionId)) {
-                        //         console.log(d.connectionId + " is drawn");
-                        //         return color("#FF1500");
-                        //     } else {
-                        //         return color("#FFFFFF");
-                        //     }
-                        // });
                 }
             }
         } else {
@@ -684,61 +683,8 @@ class RandomSN extends Component {
             alert("Please generate the random profiles first, \n and choose profiles for A and B.");
         }
     }
-    drawPlaceHolderSPDir = () => {
-        var that = this;
-        // Select the spDirSVGContainer
-        this.spDirSVGContainer = d3.select("#sp-dir-svg-container");
-        //
-        that.spDirSVGElement = that.spDirSVGContainer.append("svg")
-                                .attr("viewBox", `0 0 400 100`)
-                                .attr("id", "sp-dir-placeholder")
-                                .attr("border", 1)
-                                .style("border-left", "solid white 1px")
-                                .style("background-color", "black");
-        //
-        var svgWidth = 400 - 20 - 20,
-            svgHeight = 100 - 10 - 10,
-            numNodes = 2,
-            xCoorIncrement = svgWidth/numNodes,
-            xStartingCoor = 20 + (xCoorIncrement/2),
-            yCoor = (svgHeight/3) * 2;
-        //
-        let nodes = [];
-        let nodeNames = ["Profile A", "Profile B"];
-        nodes.push([Number(xStartingCoor), Number(yCoor)]);
-        nodes.push([Number(xStartingCoor + xCoorIncrement), Number(yCoor)]);
-        //
-        that.spDirLinks = d3.linkHorizontal()({
-                                source: nodes[0],
-                                target: nodes[1]
-                            });
-        //
-        that.spDirSVGElement.append('path')
-            .attr('d', that.spDirLinks)
-            .attr('class', 'sp-dir-link')
-            .attr('stroke', 'teal')
-            .attr('fill', 'none')
-            .style("stroke-dasharray", ("3, 3"));
-        // Add a circle to each node
-        for (let i=0; i<nodes.length; i++) {
-            that.spDirSVGElement.append('circle')
-                .attr('class', 'sp-dir-node')
-                .attr('cx', nodes[i][0])
-                .attr('cy', nodes[i][1])
-                .attr('r', 10)
-                .style('fill', 'teal');
-            // Add a name label to each node
-            that.spDirSVGElement.append("text")
-                .attr("class", "sp-dir-profile-name")
-                .attr("x", nodes[i][0] - (((nodeNames[i].length-3)/2) * 6))
-                .attr("y", nodes[i][1] - 20)
-                .attr("font-size", 10)
-                .attr("fill", "white")
-                .text(nodeNames[i])
-                .style("opacity", 1);
-        }
-        d3.select("#sp-dir-svg-container").attr("align","center");
-    }
+
+    //
     drawSPDirection = (nodes4SPDirection, links4SPDirection) => {
         console.log(nodes4SPDirection);
         console.log(links4SPDirection);
@@ -819,33 +765,8 @@ class RandomSN extends Component {
             spDirGraphAppended: true
         });
     }
-    resetProfileSearch = () => {
-        if (this.spCircle) this.spCircle.remove();
-        // To prevent appending more than one graph & one tooltip
-        if (this.state.spDirGraphAppended) {
-            this.spDirSVGElement.remove();
-            this.setState({
-                spDirGraphAppended: false
-            });
-            this.drawPlaceHolderSPDir();
-        }
-    }
-    resetFromAtoB = e => {
-        document.getElementById("autocomplete-input-profile-a").value = "";
-        document.getElementById("autocomplete-input-profile-b").value = "";
-        console.log(document.getElementById("autocomplete-input-profile-a").value);
-        console.log(document.getElementById("autocomplete-input-profile-b").value);
-
-        if (this.spCircle) this.spCircle.remove();
-        // To prevent appending more than one graph & one tooltip
-        if (this.state.spDirGraphAppended) {
-            this.spDirSVGElement.remove();
-            this.setState({
-                spDirGraphAppended: false
-            });
-            this.drawPlaceHolderSPDir();
-        }
-    }
+    
+    // Unselect all nodes that are clicked by the user
     clearSelection = e => {
         this.setState({
             aNodeClicked: false
@@ -869,11 +790,9 @@ class RandomSN extends Component {
                 that.spCircle.attr("r", function(d){ return d.influence/2 > 20 ? d.influence/2 : 20; })
             that.tooltip.html("Click on the profile you want to view." +
                 "<p/> Click on 'Unselect' to clear selection.");
+            document.getElementById('unselect-button').disabled = true;
         }
     }
-
-
-
 
     render() {
         const { numberOfProfiles, profilePicsDisplayed, profileNamesDisplayed } = this.state;
@@ -883,12 +802,7 @@ class RandomSN extends Component {
                 <div className="row">
                     <div className="col s12 m12 l12">
                         <h4>Social Network Visualizer &nbsp;
-                            <a id="help-guide" className="black teal-text tooltipped"
-                                data-html="true" 
-                                data-position="bottom" 
-                                data-tooltip={this.addHelpGuideData()}>
-                                    <i className="material-icons small">help</i>
-                            </a>
+                            <DemoHelpGuide />
                         </h4>
                     </div>
                 </div>
@@ -901,15 +815,8 @@ class RandomSN extends Component {
                         resetProfileNamesPicsSetting={this.resetProfileNamesPicsSetting}
                         resetProfileSearch={this.resetProfileSearch} 
                         findSPFromAtoB={this.findSPFromAtoB} 
-                        resetFromAtoB={this.resetFromAtoB} />
-
-
-
-
-                    
-
-
-
+                        resetFromAtoB={this.resetFromAtoB}
+                    />
                     <div className="section">
                         <div className="row" style={{marginBottom: "0px"}}>
                             <div className="col s12 m3 l3">
@@ -928,17 +835,14 @@ class RandomSN extends Component {
                                     <div className="col s9 m10 l8 left">
                                         <div id="clear-selection-btn-container">
                                             <button className="waves-effect waves-light teal darken-2 white-text btn left"
-                                                onClick={this.clearSelection}>
+                                                id="unselect-button"
+                                                onClick={this.clearSelection}
+                                                disabled={!this.state.aNodeClicked}
+                                            >
                                                     Unselect
                                             </button>
-                                            {/* <input name="clearButton"
-                                                    type="button"
-                                                    value="clear selection"
-                                                    onClick={this.clearSelection}
-                                                    className="waves-effect waves-light teal darken-2 white-text btn right" /> */}
                                         </div>
                                     </div>
-                                    
                                 </div>
                             </div>
                             <div className="col s12 m9 l9">
@@ -946,8 +850,6 @@ class RandomSN extends Component {
                             </div>
                         </div>
                     </div>
-
-
                     <div className="row">
                         <div className="col s12 m12 l12">
                             <div className="row">
