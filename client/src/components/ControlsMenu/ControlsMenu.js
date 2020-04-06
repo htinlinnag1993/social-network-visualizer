@@ -1,5 +1,4 @@
 import React, { Component, useCallback } from 'react';
-import M from 'materialize-css/dist/js/materialize.min.js';
 import RandomDataGenerator from './RandomDataGenerator';
 import ProfileNamesAndPicsToggler from './ProfileNamesNPicsToggler';
 import FromAToBFinder from './FromAToBFinder';
