@@ -12,6 +12,7 @@ const expressip = require('express-ip');
 const path = require('path');
 
 require('./models/User');
+require('./models/GeneralNetwork');
 require('./services/passport');
 
 mongoose.connect(keys.mongoURI);
@@ -33,6 +34,7 @@ app.use(expressip().getIpInfoMiddleware);
 require('./routes/authRoutes')(app);
 require('./routes/randomProfilesConnectionsRoutes')(app, RPG, fs);
 require('./routes/clientIPRoutes')(app);
+require('./routes/myGeneralNetworksRoutes')(app);
 
 if (process.env.NODE_ENV === 'production') {
     // Express will serve up production assets like our main.js file, main.css file
