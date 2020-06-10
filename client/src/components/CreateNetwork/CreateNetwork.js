@@ -20,7 +20,7 @@ class CreateNewNetwork extends Component {
                         borderBottomStyle: 'solid', borderBottomColor: 'grey' 
                     }}>
                         <div style={{ marginBottom: '25px' }}>
-                            <Link to="/new/network/fileupload" className="btn-large center teal darken-2 white-text">
+                            <Link to="/network/new/fileupload" className="btn-large center teal darken-2 white-text">
                                 <div>
                                     <span>JSON File Upload</span>
                                     <i className="material-icons right">file_upload</i>
@@ -36,7 +36,7 @@ class CreateNewNetwork extends Component {
                         marginLeft: '2px', marginRight: '2px'
                     }}>
                         <div style={{ marginBottom: '25px' }}>
-                            <Link to="/new/network" className="btn-large center teal darken-2 white-text">
+                            <Link to="/network/create" className="btn-large center teal darken-2 white-text">
                                 <span>Node by Node</span>
                                 <i className="material-icons right">create</i>
                             </Link>

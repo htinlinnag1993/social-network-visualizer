@@ -1,5 +1,5 @@
 module.exports = (app, RPG, fs) => {
-    app.get('/api/generate/random-profiles-and-connections(/*)?', function(req, res) {
+    app.get('/api/random/generate/random-profiles-and-connections(/*)?', function(req, res) {
         var numberOfProfiles = Number(req.query.numofprofiles);
 
         const rpg = new RPG(numberOfProfiles, 101);

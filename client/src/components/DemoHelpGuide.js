@@ -9,7 +9,7 @@ class DemoHelpGuide extends Component {
     componentDidMount() {
         // Initialize Tooltip for help guide of the app
         this.helpGuide = document.querySelector('#help-guide');
-        M.Tooltip.init();
+        M.Tooltip.init(this.helpGuide,);
     }
     addHelpGuideData = () => {
         var string =    "<p>This web app is a demo version of our SNV app." + "<br/>" +

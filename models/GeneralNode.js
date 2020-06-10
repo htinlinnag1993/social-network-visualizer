@@ -2,8 +2,9 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const generalNodeSchema = new Schema({
-    id: Number,
+    nodeID: Number,
     name: String,
+    descrition: String,
     // avatar: Buffer,
     // dob: Date,
     // email: String,

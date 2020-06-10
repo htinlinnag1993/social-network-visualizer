@@ -157,7 +157,7 @@ class RandomSN extends Component {
             numberOfProfiles: num
         });
         // Get and set the external random data from api for the social network
-        var url = '/api/generate/random-profiles-and-connections/' + '?numofprofiles=' + num;
+        var url = '/api/random/generate/random-profiles-and-connections' + '?numofprofiles=' + num;
         const res = await axios.get(url);
         // Extract data from dataset & set the states
         var nodes = res.data.nodes,
