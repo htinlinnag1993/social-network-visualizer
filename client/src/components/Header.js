@@ -28,7 +28,7 @@ class Header extends Component {
                 return (
                     <li key="2">
                         <a href="/auth/google" style={{ paddingLeft: '2px' }}>
-                            <div class="center-align">
+                            <div className="center-align">
                                 <img width="45px" style={{ marginTop: '-11px', marginRight: '12px'}} alt="Google sign-in"  src="/resources/images/Google_Official_Button.png" className="left" />
                                 Sign in with Google
                             </div>

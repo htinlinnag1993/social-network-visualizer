@@ -6,6 +6,7 @@ const GeneralLinkSchema = require('./GeneralLink');
 const generalNetworkSchema = new Schema({
     name: String,
     description: String,
+    startingNodeID: Number,
     nodes: [GeneralNodeSchema], // Sub document collection. Imported from GeneralNodeSchema.
     links: [GeneralLinkSchema], // Sub document collection. Imported from GeneralLinkSchema.
     lastUpdated: Date,

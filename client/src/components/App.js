@@ -10,10 +10,11 @@ import Header from './Header';
 import Landing from './Landing';
 import Dashboard from './Dashboard/Dashboard';
 import RandomSN from './RandomSN';
-import SocialNetworkGraph from './SocialNetworkGraph';
 import Footer from './Footer';
-import CreateNewNetwork from './CreateNewNetwork/CreateNewNetwork';
-import FileUploadNewNetwork from './CreateNewNetwork/FileUploadNewNetwork';
+import CreateNetwork from './CreateNetwork/CreateNetwork';
+import CreateNetworkFileUpload from './CreateNetwork/CreateNetworkFileUpload';
+import ShowNetwork from './ShowNetwork/ShowNetwork';
+import EditNetwork from './EditNetwork/EditNetwork';
 
 library.add(fab, faGithub, faCheckSquare, faCoffee);
 
@@ -35,9 +36,10 @@ class App extends Component {
                 <Route exact path="/" component={Landing} />
                 <Route exact path="/dashboard" component={Dashboard} />
                 <Route exact path="/demo" component={RandomSN} />
-                <Route exact path="/new/network" component={CreateNewNetwork} />
-                <Route exact path="/new/network/fileupload" component={FileUploadNewNetwork} />
-                {/* <Route exact path="/test" component={SocialNetworkGraph} /> */}
+                <Route exact path="/network/new" component={CreateNetwork} />
+                <Route exact path="/network/new/fileupload" component={CreateNetworkFileUpload} />
+                <Route exact path="/network/show/:id" component={ShowNetwork} />
+                <Route exact path="/network/edit/:id" component={EditNetwork} />
               </main>
               <Footer />
           </div>

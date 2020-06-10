@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import M from 'materialize-css/dist/js/materialize.min.js';
-import MyNetworks from './MyNetworks';
+import MyNetworks from './MyNetworks/MyNetworks';
 import MyNodes from './MyNodes';
 import MyLinks from './MyLinks';
 
@@ -59,15 +59,15 @@ class Dashboard extends Component {
                             </li>
                         </ul>
                     </div>
-                    <div id="my-networks" class="col s12">
+                    <div id="my-networks" className="col s12">
                         {/* <h4>Networks</h4> */}
                         <MyNetworks />
                     </div>
-                    <div id="my-nodes" class="col s12">
+                    <div id="my-nodes" className="col s12">
                         {/* <h4>Profile</h4> */}
                         <MyNodes />
                     </div>
-                    <div id="my-links" class="col s12">
+                    <div id="my-links" className="col s12">
                         {/* <h4>Profile</h4> */}
                         <MyLinks />
                     </div>

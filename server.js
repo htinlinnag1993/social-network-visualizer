@@ -34,7 +34,7 @@ app.use(expressip().getIpInfoMiddleware);
 require('./routes/authRoutes')(app);
 require('./routes/randomProfilesConnectionsRoutes')(app, RPG, fs);
 require('./routes/clientIPRoutes')(app);
-require('./routes/myGeneralNetworksRoutes')(app);
+require('./routes/networkRoutes')(app);
 
 if (process.env.NODE_ENV === 'production') {
     // Express will serve up production assets like our main.js file, main.css file
