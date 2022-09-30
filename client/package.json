@@ -11,7 +11,7 @@
     "@testing-library/react": "^9.4.0",
     "@testing-library/user-event": "^7.2.1",
     "axios": "^0.19.1",
-    "d3": "^5.15.0",
+    "d3": "^7.6.1",
     "http-proxy-middleware": "^0.21.0",
     "materialize-css": "^1.0.0-rc.2",
     "react": "^16.12.0",
